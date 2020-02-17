@@ -8,15 +8,28 @@
 
 import UIKit
 
+enum Constant {
+	static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
+	static let serverResponse = "CHAT-SERVER-RESPONSE-"
+
+	enum Message {
+		static let searchingServer = "Searching a server nearby"
+		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"
+	}
+}
+
 func htons(value: CUnsignedShort) -> CUnsignedShort {
     return (value << 8) + (value >> 8)
 }
 
 class ViewController: UIViewController {
 
-	@IBOutlet var textViewBottomConstraint: NSLayoutConstraint!
-	@IBOutlet var tableView: UITableView!
-	@IBOutlet var textView: UITextView!
+	@IBOutlet private var textViewBottomConstraint: NSLayoutConstraint!
+	@IBOutlet private var tableView: UITableView!
+	@IBOutlet private var textView: UITextView!
+
+	private var roleManager: RoleManager!
+	private var networkInformationProvider: NetworkInformationProvider?
 
 	private var messages: [String] = [] {
 		didSet {
@@ -24,207 +37,117 @@ class ViewController: UIViewController {
 		}
 	}
 
-	var address = sockaddr_in()
-	var receiverAddress = sockaddr_in()
-
-	let fd: Int32 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-	let receiverFd =  socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-
 	override func viewDidLoad() {
 		super.viewDidLoad()
 
-		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+		registerForKeyboard()
+		addGestureRecognizer()
+		setupTableview()
 
-		let tap = UITapGestureRecognizer(target: self, action: #selector(didTapTable))
-		tableView.addGestureRecognizer(tap)
+		retrieveNetworkInformation()
 
-		tableView.delegate = self
-		tableView.dataSource = self
+		roleManager.currentDevice.bindForUDPMessages()
+		roleManager.currentDevice.createBroadcastKqueue()
+		
+		roleManager.currentDevice.enableTransmissionToBroadcast()
+		roleManager.currentDevice.findServer()
+	}
 
-		if fd < 0 || receiverFd < 0 {
+	private func retrieveNetworkInformation() {
+		let availableInterfaces = InterfaceFinder.getAvailableInterfaces()
+		connectToInterface(availableInterfaces)
+	}
+
+	private func connectToInterface(_ interfaces: [Interface]) {
+		let hotspotCondition: (Interface) -> Bool = { interface in
+			return interface.name.contains("bridge")
+		}
+
+		let wlanCondition: (Interface) -> Bool = { interface in
+			return interface.name == "en0"
+		}
+
+		let foundInterfaceClosure: (Interface) -> Void = { interface in
+			print("Connected to \(interface.name)")
+			let currentDevice = Client(ip: interface.ip, networkInformationProvider: interface)
+			self.roleManager = RoleManager(currentDevice: currentDevice)
+			currentDevice.broadcastMessagesDelegate = self.roleManager
+			currentDevice.roleGrantDelegate = self.roleManager
+			currentDevice.serverIPProvider = self.roleManager
+			currentDevice.presenter = self
+			self.networkInformationProvider = interface
+		}
+
+		// First check if the hotstop is available then wlan
+		if let hotspotInterface = interfaces.first (where: hotspotCondition) {
+			foundInterfaceClosure(hotspotInterface)
+		} else if let wlanInterface = interfaces.first (where: wlanCondition) {
+			foundInterfaceClosure(wlanInterface)
+		} else {
+			print("Error: interface not found")
 			exit(-1)
 		}
+	}
 
-		address.sin_family = sa_family_t(AF_INET)
-		address.sin_addr.s_addr = inet_addr("192.168.0.255")
-		address.sin_port = htons(value: 9010)
-
-		receiverAddress.sin_family = sa_family_t(AF_INET)
-		receiverAddress.sin_addr.s_addr = INADDR_ANY
-		receiverAddress.sin_port = htons(value: 9010)
-
-		let broadcast = 1;
-
-		withUnsafePointer(to: broadcast) { broadcastPrt in
-			setsockopt(fd, SOL_SOCKET, SO_BROADCAST, broadcastPrt, UInt32(MemoryLayout<Int>.size))
-			return
-		}
-
-		withUnsafePointer(to: receiverAddress) { receiverAddressPtr in
-			let r = UnsafeRawPointer(receiverAddressPtr).bindMemory(to: sockaddr.self, capacity: 1)
-			bind(receiverFd, r, UInt32(MemoryLayout<sockaddr_in>.stride))
-		}
-
-		setSockKqueue(fd: receiverFd)
-
-		var c: String = String()
-
-		withUnsafePointer(to: receiverAddress) { receiverAddressPtr in
-			let r = UnsafeRawPointer(receiverAddressPtr).bindMemory(to: sockaddr.self, capacity: 1)
-			let mutR: UnsafeMutablePointer<sockaddr> = UnsafeMutablePointer.init(mutating: r)
-			var l = UInt32(MemoryLayout<sockaddr_in>.stride)
-			recvfrom(receiverFd, &c, c.count, 0, mutR, &l)
+	private func addNewMessage(_ message: String) {
+		DispatchQueue.main.async { [weak self] in
+		   guard let _self = self else { return }
+		   _self.textView.text = ""
+		   _self.messages.insert(message, at: 0)
 		}
 	}
 
-	@objc private func didTapTable() {
-		view.endEditing(true)
-	}
-
-	private func setSockKqueue(fd: Int32) {
-		let socketKQueue = kqueue()
-
-		if socketKQueue == -1 {
-			 print("Error creating kqueue")
-			 exit(EXIT_FAILURE)
-		 }
-
-		// Create the kevent structure that sets up our kqueue to listen
-        // for notifications
-        var sockKevent = kevent(
-            ident: UInt(fd),
-            filter: Int16(EVFILT_READ),
-            flags: UInt16(EV_ADD | EV_ENABLE),
-            fflags: 0,
-            data: 0,
-            udata: nil
-        )
-
-        // This is where the kqueue is register with our
-        // interest for the notifications described by
-        // our kevent structure sockKevent
-        kevent(socketKQueue, &sockKevent, 1, nil, 0, nil)
-
-        DispatchQueue.global(qos: .default).async {
-            var event = kevent()
-            while true {
-                let status = kevent(socketKQueue, nil, 0, &event, 1, nil)
-                if  status == 0 {
-                    print("Timeout")
-                } else if status > 0 {
-                    if (event.flags & UInt16(EV_EOF)) == EV_EOF {
-                        print("The socket (\(fd)) has been closed.")
-                        break
-                    }
-                    print("File descriptor: \(fd) - has \(event.data) characters for reading")
-                    self.readFrom(socket: fd)
-                } else {
-                    print("Error reading kevent")
-                    close(socketKQueue)
-                    exit(EXIT_FAILURE)
-                }
-            }
-            print("Bye from kevent")
-        }
-	}
-
-    func readFrom(socket fd: Int32) {
-      let MTU = 65536
-      var buffer = UnsafeMutableRawPointer.allocate(byteCount: MTU,alignment: MemoryLayout<CChar>.size)
-
-      let readResult = read(fd, &buffer, MTU)
-
-      if (readResult == 0) {
-        return  // end of file
-      } else if (readResult == -1) {
-        print("Error reading form client\(fd) - \(errno)")
-        return  // error
-      } else {
-        //This is an ugly way to add the null-terminator at the end of the buffer we just read
-        withUnsafeMutablePointer(to: &buffer) {
-          $0.withMemoryRebound(to: UInt8.self, capacity: readResult + 1) {
-            $0.advanced(by: readResult).assign(repeating: 0, count: 1)
-          }
-        }
-        let strResult = withUnsafePointer(to: &buffer) {
-          $0.withMemoryRebound(to: CChar.self, capacity: MemoryLayout.size(ofValue: readResult)) {
-            String(cString: $0)
-          }
-        }
-        print("Received form client \(strResult)")
-		DispatchQueue.main.async {
-			self.textView.text = ""
-			self.messages.insert(strResult, at: 0)
-		}
-
-      }
-    }
-
-	@IBAction func tap(_ sender: Any) {
-		textView.text.withCString { cstr -> Void in
-			let sent: Int = withUnsafePointer(to: &address) {
-
-				let broadcastMessageLength = Int(strlen(cstr))
-				let p = UnsafeRawPointer($0).bindMemory(to: sockaddr.self, capacity: 1)
-
-				// Send the message
-				return sendto(fd, cstr, broadcastMessageLength, 0, p, UInt32(MemoryLayout<sockaddr_in>.stride))
-			}
-		}
-		view.endEditing(true)
+	// MARK: - Utilities
+	private func registerForKeyboard() {
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
 	}
 
 	@objc private func keyboardWillShow(_ notification: Notification!) {
 		guard
 			let userInfo = notification.userInfo,
-			let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+			let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+			let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
 		else {
 			return
 		}
-
-
-		let newBottomConstant = endFrame.height
-
-		if let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
-			let curve: UIView.AnimationOptions = {
-				if let rawCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt {
-					return UIView.AnimationOptions(rawValue: rawCurve)
-				}
-				return .curveEaseInOut
-			}()
-
-			UIView.animate(withDuration: duration, delay: 0, options: [curve], animations: {
-				self.textViewBottomConstraint.constant = newBottomConstant
-				self.view.layoutIfNeeded()
-			}, completion: nil)
-		}
+		setBottomConstraint(endFrame.height, duration: duration)
 	}
 
 	@objc private func keyboardWillHide(_ notification: Notification!) {
-
-		guard
-			let userInfo = notification.userInfo,
-			let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
-		else {
+		guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else {
 			return
 		}
 
-		let newBottomConstant = 0
+		setBottomConstraint(0, duration: duration)
+	}
 
-		if let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval {
-			let curve: UIView.AnimationOptions = {
-				if let rawCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt {
-					return UIView.AnimationOptions(rawValue: rawCurve)
-				}
-				return .curveEaseInOut
-			}()
+	private func setBottomConstraint(_ constant: CGFloat, duration: Double) {
+		let newBottomConstant = constant
 
-			UIView.animate(withDuration: duration, delay: 0, options: [curve], animations: {
-				self.textViewBottomConstraint.constant = CGFloat(newBottomConstant)
-				self.view.layoutIfNeeded()
-			}, completion: nil)
-		}
+		UIView.animate(withDuration: duration, delay: 0, options: [], animations: {
+			self.textViewBottomConstraint.constant = newBottomConstant
+			self.view.layoutIfNeeded()
+		}, completion: nil)
+	}
+
+	private func addGestureRecognizer() {
+		let tap = UITapGestureRecognizer(target: self, action: #selector(didTapOnTableview))
+		tableView.addGestureRecognizer(tap)
+	}
+
+	private func setupTableview() {
+		tableView.delegate = self
+		tableView.dataSource = self
+	}
+
+	@objc private func didTapOnTableview() {
+		view.endEditing(true)
+	}
+
+	@IBAction func didTapSendButton(_ sender: Any) {
+		roleManager.send(textView.text)
+		view.endEditing(true)
 	}
 }
 
@@ -235,7 +158,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-
 		cell.textLabel?.text = messages[indexPath.row]
 		return cell
 	}
@@ -244,14 +166,6 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension Notification {
-	/// Returns whether the keyboard is docked
-	public var isKeyboardDocked: Bool {
-		let keyboardFrame = self.keyboardFrame
-		let screenBounds = UIScreen.main.bounds
-
-		return (keyboardFrame.origin.y + keyboardFrame.size.height) >= screenBounds.size.height
-	}
-
 	/// Returns the frame of the keyboard.
 	///
 	/// - Note: If the keyboard is hidden due to a hardware keyboard then its
@@ -263,18 +177,10 @@ extension Notification {
 
 		return keyboardFrame
 	}
-
-	/// Returns the frame of the keyboard clipped to a rect in the coordinate space of the screen
-	public func keyboardFrame(clippedToRect clippingRect: CGRect) -> CGRect {
-		let keyboardFrame = self.keyboardFrame
-		let clippedKeyboardFrame = clippingRect.intersection(keyboardFrame)
-
-		return clippedKeyboardFrame
-	}
-
-	/// Returns the frame of the keyboard clipped to the screens bounds
-	public var keyboardFrameClippedToScreenBounds: CGRect {
-		return keyboardFrame(clippedToRect: UIScreen.main.bounds)
-	}
 }
 
+extension ViewController: MessagePresenter {
+	func show(text: String) {
+		addNewMessage(text)
+	}
+}

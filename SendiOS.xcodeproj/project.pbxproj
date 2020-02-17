@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585323FEDB4B001020FD /* InterfaceFinder.swift */; };
+		EF50585623FEDC84001020FD /* Interface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585523FEDC84001020FD /* Interface.swift */; };
+		EF50585823FEDEF4001020FD /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585723FEDEF4001020FD /* Server.swift */; };
+		EF50585A23FEDF0C001020FD /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585923FEDF0C001020FD /* Client.swift */; };
+		EF50585C23FEF5C3001020FD /* RoleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585B23FEF5C3001020FD /* RoleManager.swift */; };
+		EF50585E23FF0B2B001020FD /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585D23FF0B2B001020FD /* Device.swift */; };
+		EF5058612400A5A1001020FD /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5058602400A5A1001020FD /* Utilities.swift */; };
 		EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC023F76403002CB0EE /* AppDelegate.swift */; };
 		EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC223F76403002CB0EE /* SceneDelegate.swift */; };
 		EF884EC523F76403002CB0EE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC423F76403002CB0EE /* ViewController.swift */; };
@@ -16,6 +23,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EF50585323FEDB4B001020FD /* InterfaceFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceFinder.swift; sourceTree = "<group>"; };
+		EF50585523FEDC84001020FD /* Interface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interface.swift; sourceTree = "<group>"; };
+		EF50585723FEDEF4001020FD /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
+		EF50585923FEDF0C001020FD /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		EF50585B23FEF5C3001020FD /* RoleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleManager.swift; sourceTree = "<group>"; };
+		EF50585D23FF0B2B001020FD /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		EF5058602400A5A1001020FD /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		EF884EBD23F76403002CB0EE /* SendiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SendiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF884EC023F76403002CB0EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EF884EC223F76403002CB0EE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -37,6 +51,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF50585F23FF0BEB001020FD /* Devices */ = {
+			isa = PBXGroup;
+			children = (
+				EF50585723FEDEF4001020FD /* Server.swift */,
+				EF50585923FEDF0C001020FD /* Client.swift */,
+				EF50585D23FF0B2B001020FD /* Device.swift */,
+			);
+			path = Devices;
+			sourceTree = "<group>";
+		};
 		EF884EB423F76403002CB0EE = {
 			isa = PBXGroup;
 			children = (
@@ -59,6 +83,11 @@
 				EF884EC023F76403002CB0EE /* AppDelegate.swift */,
 				EF884EC223F76403002CB0EE /* SceneDelegate.swift */,
 				EF884EC423F76403002CB0EE /* ViewController.swift */,
+				EF50585323FEDB4B001020FD /* InterfaceFinder.swift */,
+				EF50585523FEDC84001020FD /* Interface.swift */,
+				EF50585B23FEF5C3001020FD /* RoleManager.swift */,
+				EF5058602400A5A1001020FD /* Utilities.swift */,
+				EF50585F23FF0BEB001020FD /* Devices */,
 				EF884EC623F76403002CB0EE /* Main.storyboard */,
 				EF884EC923F76408002CB0EE /* Assets.xcassets */,
 				EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */,
@@ -139,7 +168,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF884EC523F76403002CB0EE /* ViewController.swift in Sources */,
+				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,
+				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
+				EF50585E23FF0B2B001020FD /* Device.swift in Sources */,
+				EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */,
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
+				EF50585C23FEF5C3001020FD /* RoleManager.swift in Sources */,
+				EF50585823FEDEF4001020FD /* Server.swift in Sources */,
+				EF5058612400A5A1001020FD /* Utilities.swift in Sources */,
 				EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
