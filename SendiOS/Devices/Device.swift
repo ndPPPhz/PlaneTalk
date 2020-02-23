@@ -44,10 +44,7 @@ extension Device {
 			exit(-1)
 		}
 
-		var socket_binding_address = sockaddr_in()
-		socket_binding_address.sin_family = sa_family_t(AF_INET)
-		socket_binding_address.sin_addr.s_addr = INADDR_ANY
-		socket_binding_address.sin_port = htons(value: 9010)
+		let socket_binding_address = generateReceiverSockAddrInTemplate(port: udpPort)
 
 		// Binding to a UDP Port
 		let bindReturn = withUnsafePointer(to: socket_binding_address) { bindingAddressPtr -> Int32 in

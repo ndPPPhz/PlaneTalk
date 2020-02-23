@@ -17,7 +17,7 @@ func ipAddress(from sockaddr_in: sockaddr_in) -> String {
 
 func generateBroadcastSockAddrIn(source_address: String) -> sockaddr_in {
 	var socket_broadcast_address = sockaddr_in()
-	// set the socket
+
 	socket_broadcast_address.sin_family = sa_family_t(AF_INET)
 	socket_broadcast_address.sin_addr.s_addr = inet_addr(source_address)
 	socket_broadcast_address.sin_port = htons(value: udpPort)
@@ -27,9 +27,17 @@ func generateBroadcastSockAddrIn(source_address: String) -> sockaddr_in {
 func generateTCPSockAddrIn(server_address: String) -> sockaddr_in {
 	var server_tcp_sock_addr = sockaddr_in()
 
-	// assign IP, PORT
 	server_tcp_sock_addr.sin_family = sa_family_t(AF_INET)
 	server_tcp_sock_addr.sin_addr.s_addr = inet_addr(server_address)
 	server_tcp_sock_addr.sin_port = htons(value: tcpPort);
 	return server_tcp_sock_addr
+}
+
+func generateReceiverSockAddrInTemplate(port: UInt16) -> sockaddr_in {
+	var sock_addr = sockaddr_in()
+
+	sock_addr.sin_family = sa_family_t(AF_INET)
+	sock_addr.sin_addr.s_addr = INADDR_ANY
+	sock_addr.sin_port = htons(value: port);
+	return sock_addr
 }

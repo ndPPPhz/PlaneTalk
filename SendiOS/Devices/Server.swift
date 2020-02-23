@@ -14,15 +14,22 @@ class Server: Device {
 	weak var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate?
 	weak var presenter: MessagePresenter?
 
+	// Server udp broadcast socket
 	let udp_broadcast_message_socket: Int32
+	// Server udp reception socket
 	let udp_reception_message_socket: Int32
 
+	// Incoming TCP connections socket
 	private var incoming_tcp_connections_socket: Int32 = -1
 
-	var broadcastKQueue: Int32
-	private let tcpKQueue = kqueue()
+	// Kqueue to organise broadcast events
+	lazy var broadcastKQueue: Int32 = kqueue()
+	// Kqueue to organise tcp events
+	private let tcpKQueue: Int32 = kqueue()
 
-	private var connectionSockets: [Int32] = []
+	// Map of the fd and their IPs
+	private var connectionSockets: [Int32: String] = [:]
+	// Array of all the kevents
 	private var kEvents: [kevent] = []
 
 	let maxListeningConnections: Int32 = 5
@@ -39,7 +46,6 @@ class Server: Device {
 		self.udp_broadcast_message_socket = udp_broadcast_message_socket
 		self.udp_reception_message_socket = udp_reception_message_socket
 		self.networkInformationProvider = networkInformationProvider
-		broadcastKQueue = kqueue()
 	}
 
 	func createTCPSocket() {
@@ -49,12 +55,7 @@ class Server: Device {
 			exit(-1);
 		}
 
-		var incoming_client_tcp_sock_addr = sockaddr_in()
-
-		// assign IP, PORT
-		incoming_client_tcp_sock_addr.sin_family = sa_family_t(AF_INET)
-		incoming_client_tcp_sock_addr.sin_addr.s_addr = INADDR_ANY
-		incoming_client_tcp_sock_addr.sin_port = htons(value: 8010);
+		let incoming_client_tcp_sock_addr = generateReceiverSockAddrInTemplate(port: tcpPort)
 
 		// Binding
 		let bindReturn = withUnsafePointer(to: incoming_client_tcp_sock_addr) { tcp_sock_addr_ptr -> Int32 in
@@ -138,12 +139,13 @@ class Server: Device {
 					print("Bye bye socket \(fd)")
 					if let index = kEvents.lastIndex(where: { $0.ident == fd }) {
 						kEvents.remove(at: index)
+						connectionSockets.removeValue(forKey: Int32(fd))
 					}
 					close(Int32(fd))
 				} else if incoming_tcp_connections_socket == fd {
 					handleNewConnection()
-				} else if let fd = connectionSockets.first(where: ({ $0 == fd })) {
-					incomingMessage(socket: fd)
+				} else if let fd_and_ip = connectionSockets.first(where: ({ $0.key == fd })) {
+					incomingMessage(socket: fd_and_ip.key, senderIP: fd_and_ip.value)
 				}
 			}
 		default:
@@ -155,24 +157,25 @@ class Server: Device {
 
 	private func handleNewConnection() {
 		let client_address = sockaddr_in()
-		let connection_socket = withUnsafePointer(to: client_address) { client_address_ptr -> Int32 in
+		let connection_socket_and_client_ip: (fd: Int32, IP: String) = withUnsafePointer(to: client_address) { client_address_ptr -> (Int32, String) in
 			let raw_client_address_ptr = UnsafeRawPointer(client_address_ptr).bindMemory(to: sockaddr.self, capacity: 1)
 			let mutable_raw_client_address_ptr = UnsafeMutablePointer(mutating: raw_client_address_ptr)
 			var size = UInt32(MemoryLayout<sockaddr>.stride)
 			let connection_fd = accept(incoming_tcp_connections_socket, mutable_raw_client_address_ptr, &size)
-			return connection_fd
+			let clientIP = String(cString: inet_ntoa(client_address_ptr.pointee.sin_addr))
+			return (connection_fd, clientIP)
 		}
 
-		if connection_socket < 0 {
+		if connection_socket_and_client_ip.fd < 0 {
 			exit(-1)
 		}
 
-		connectionSockets.append(connection_socket)
+		connectionSockets[connection_socket_and_client_ip.fd] = connection_socket_and_client_ip.IP
 
 		// Create the kevent structure that sets up our kqueue to listen
         // for notifications
         var sockKevent = kevent(
-            ident: UInt(connection_socket),
+			ident: UInt(connection_socket_and_client_ip.fd),
             filter: Int16(EVFILT_READ),
             flags: UInt16(EV_ADD | EV_ENABLE),
             fflags: 0,
@@ -186,33 +189,20 @@ class Server: Device {
 		print("TCP Connection accepted")
 	}
 
-	private func incomingMessage(socket: Int32) {
+	private func incomingMessage(socket: Int32, senderIP: String) {
 		let receivedStringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 		let rawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
 
-		let sender = sockaddr_in()
-		withUnsafePointer(to: sender) { receiverAddressPtr in
-			let r = UnsafeRawPointer(receiverAddressPtr).bindMemory(to: sockaddr.self, capacity: 1)
-			let mutR: UnsafeMutablePointer<sockaddr> = UnsafeMutablePointer.init(mutating: r)
-			var l = UInt32(MemoryLayout<sockaddr_in>.stride)
+		let read_return = recv(socket, rawPointer, 65536, 0)
 
-			let read_return = recv(socket, rawPointer, 65536, 0)
-
-			guard
-				let baseAddress = receivedStringBuffer.baseAddress,
-				read_return > 0
-			else {
-				return
-			}
-
-			if getsockname(socket, mutR, &l) == 0 {
-				let sockAddrPtr = UnsafeRawPointer(mutR).bindMemory(to: sockaddr_in.self, capacity: 1)
-				let sender = String(cString: inet_ntoa(sockAddrPtr.pointee.sin_addr))
-				print(sender)
-			}
-			let string = String(cString: UnsafePointer(baseAddress))
-			sendMessageViaTCPWithAddress(string, addressSocket: socket)
+		guard
+			let baseAddress = receivedStringBuffer.baseAddress,
+			read_return > 0
+		else {
+			return
 		}
+		let string = String(cString: UnsafePointer(baseAddress))
+		sendMessageViaTCPWithAddress("\(senderIP): \(string)", addressSocket: socket)
 	}
 
 	private func sendMessageViaTCPWithAddress(_ message: String, addressSocket: Int32) {
@@ -233,16 +223,17 @@ class Server: Device {
 	}
 
 	func sendMessageViaTCP(_ message: String) {
+		let messageWithServerAddress = "\(ip): \(message)"
 		for event in kEvents {
 			let fd = event.ident
 
-			message.withCString { cString in
+			messageWithServerAddress.withCString { cString in
 				let messageLength = Int(strlen(cString))
 				let bytes = send(Int32(fd), cString, messageLength, 0)
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Sent by server: \(message)")
+					print("Sent by server: \(messageWithServerAddress)")
 					presenter?.show(text: message)
 				}
 			}

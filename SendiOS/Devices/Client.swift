@@ -13,13 +13,14 @@ protocol MessagePresenter: AnyObject {
 }
 
 class Client: Device {
-	var broadcastKQueue: Int32
-
 	var ip: String
+
 	var udp_broadcast_message_socket: Int32
 	var udp_reception_message_socket: Int32
 	var client_tcp_socket_fd: Int32
-	lazy var kQueue = kqueue()
+
+	lazy var tcpEventQueue = kqueue()
+	var broadcastKQueue: Int32
 
 	var networkInformationProvider: NetworkInformationProvider
 	weak var roleGrantDelegate: RoleGrantDelegate?
@@ -66,7 +67,7 @@ class Client: Device {
 	}
 
 	private func createTCPKQueue() {
-		if kQueue == -1 {
+		if tcpEventQueue == -1 {
 			 print("Error creating kqueue")
 			 exit(EXIT_FAILURE)
 		 }
@@ -85,17 +86,17 @@ class Client: Device {
 		// This is where the kqueue is register with our
 		// interest for the notifications described by
 		// our kevent structure sockKevent
-		kevent(kQueue, &sockKevent, 1, nil, 0, nil)
-		watchLoop()
+		kevent(tcpEventQueue, &sockKevent, 1, nil, 0, nil)
+		tcpMessagesWatchLoop()
 	}
 
-	private func watchLoop() {
+	private func tcpMessagesWatchLoop() {
 		DispatchQueue.global().async { [weak self] in
 			while true {
 				guard let _self = self else { return }
 				var events: [kevent] = Array<kevent>(repeating: kevent(), count: 5)
-				let status = kevent(_self.kQueue, nil, 0, &events, 1, nil)
-				_self.receivedTCPConnectionStatus(status, socketKQueue: _self.kQueue, events: events)
+				let status = kevent(_self.tcpEventQueue, nil, 0, &events, 1, nil)
+				_self.receivedTCPConnectionStatus(status, socketKQueue: _self.tcpEventQueue, events: events)
 			}
 		}
 	}
@@ -124,7 +125,7 @@ class Client: Device {
 						udata: nil
 					)
 
-					if kevent(kQueue, &sockKevent, 1, nil, 0, nil) == -1 {
+					if kevent(tcpEventQueue, &sockKevent, 1, nil, 0, nil) == -1 {
 						print("Kevent error")
 					}
 
@@ -163,8 +164,6 @@ class Client: Device {
 
 	func sendToServerTCP(_ text: String) {
 		text.withCString { cstr -> Void in
-
-			// The struct containing the address of the server (for the client)
 			var server_tcp_sock_addr = sockaddr_in()
 
 			// assign IP, PORT
@@ -173,11 +172,8 @@ class Client: Device {
 			server_tcp_sock_addr.sin_port = htons(value: 8010);
 
 			let sentBytes: Int = withUnsafePointer(to: &server_tcp_sock_addr) {
-
 				let tcpMessageLength = Int(strlen(cstr))
 				let p = UnsafeRawPointer($0).bindMemory(to: sockaddr.self, capacity: 1)
-
-				// Send the message
 				return sendto(client_tcp_socket_fd, cstr, tcpMessageLength, 0, p, UInt32(MemoryLayout<sockaddr_in>.stride))
 			}
 
