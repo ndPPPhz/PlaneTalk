@@ -23,6 +23,8 @@
 		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
 		EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Extensions.swift */; };
 		EF95F8102402E35C0002C047 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80F2402E35C0002C047 /* User.swift */; };
+		EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F82E240309370002C047 /* MessageTableViewCell.swift */; };
+		EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF95F82F240309370002C047 /* MessageTableViewCell.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,7 +35,7 @@
 		EF50585B23FEF5C3001020FD /* RoleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoleManager.swift; sourceTree = "<group>"; };
 		EF50585D23FF0B2B001020FD /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		EF5058602400A5A1001020FD /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
-		EF884EBD23F76403002CB0EE /* SendiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SendiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EF884EBD23F76403002CB0EE /* PlaneTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaneTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF884EC023F76403002CB0EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EF884EC223F76403002CB0EE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		EF884EC423F76403002CB0EE /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -44,6 +46,8 @@
 		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
 		EF95F80B2402D5D20002C047 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EF95F80F2402E35C0002C047 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		EF95F82E240309370002C047 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
+		EF95F82F240309370002C047 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +74,7 @@
 		EF884EB423F76403002CB0EE = {
 			isa = PBXGroup;
 			children = (
-				EF884EBF23F76403002CB0EE /* SendiOS */,
+				EF884EBF23F76403002CB0EE /* PlaneTalk */,
 				EF884EBE23F76403002CB0EE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,12 +82,12 @@
 		EF884EBE23F76403002CB0EE /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EF884EBD23F76403002CB0EE /* SendiOS.app */,
+				EF884EBD23F76403002CB0EE /* PlaneTalk.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EF884EBF23F76403002CB0EE /* SendiOS */ = {
+		EF884EBF23F76403002CB0EE /* PlaneTalk */ = {
 			isa = PBXGroup;
 			children = (
 				EF884EC023F76403002CB0EE /* AppDelegate.swift */,
@@ -92,8 +96,9 @@
 				EF95F80E2402D7380002C047 /* Controllers */,
 				EF95F8112402E3660002C047 /* Model */,
 				EF95F80D2402D65D0002C047 /* Supporting Files */,
+				EF95F85A2403398F0002C047 /* UI */,
 			);
-			path = SendiOS;
+			path = PlaneTalk;
 			sourceTree = "<group>";
 		};
 		EF95F80D2402D65D0002C047 /* Supporting Files */ = {
@@ -129,12 +134,21 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		EF95F85A2403398F0002C047 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				EF95F82E240309370002C047 /* MessageTableViewCell.swift */,
+				EF95F82F240309370002C047 /* MessageTableViewCell.xib */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EF884EBC23F76403002CB0EE /* SendiOS */ = {
+		EF884EBC23F76403002CB0EE /* PlaneTalk */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EF884ED123F76408002CB0EE /* Build configuration list for PBXNativeTarget "SendiOS" */;
+			buildConfigurationList = EF884ED123F76408002CB0EE /* Build configuration list for PBXNativeTarget "PlaneTalk" */;
 			buildPhases = (
 				EF884EB923F76403002CB0EE /* Sources */,
 				EF884EBA23F76403002CB0EE /* Frameworks */,
@@ -144,9 +158,9 @@
 			);
 			dependencies = (
 			);
-			name = SendiOS;
+			name = PlaneTalk;
 			productName = SendiOS;
-			productReference = EF884EBD23F76403002CB0EE /* SendiOS.app */;
+			productReference = EF884EBD23F76403002CB0EE /* PlaneTalk.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -164,7 +178,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EF884EB823F76403002CB0EE /* Build configuration list for PBXProject "SendiOS" */;
+			buildConfigurationList = EF884EB823F76403002CB0EE /* Build configuration list for PBXProject "PlaneTalk" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -177,7 +191,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EF884EBC23F76403002CB0EE /* SendiOS */,
+				EF884EBC23F76403002CB0EE /* PlaneTalk */,
 			);
 		};
 /* End PBXProject section */
@@ -188,6 +202,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF884ECD23F76408002CB0EE /* LaunchScreen.storyboard in Resources */,
+				EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */,
 				EF884ECA23F76408002CB0EE /* Assets.xcassets in Resources */,
 				EF884EC823F76403002CB0EE /* Main.storyboard in Resources */,
 			);
@@ -207,6 +222,7 @@
 				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
 				EF50585E23FF0B2B001020FD /* Device.swift in Sources */,
 				EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */,
+				EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */,
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
 				EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */,
 				EF50585C23FEF5C3001020FD /* RoleManager.swift in Sources */,
@@ -358,13 +374,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 62KK4CLZ8M;
-				INFOPLIST_FILE = "SendiOS/Supporting Files/Info.plist";
+				INFOPLIST_FILE = "PlaneTalk/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ndppphz.SendiOS;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ndppphz.PlaneTalk;
+				PRODUCT_NAME = PlaneTalk;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -376,13 +392,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 62KK4CLZ8M;
-				INFOPLIST_FILE = "SendiOS/Supporting Files/Info.plist";
+				INFOPLIST_FILE = "PlaneTalk/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.ndppphz.SendiOS;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.ndppphz.PlaneTalk;
+				PRODUCT_NAME = PlaneTalk;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -391,7 +407,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EF884EB823F76403002CB0EE /* Build configuration list for PBXProject "SendiOS" */ = {
+		EF884EB823F76403002CB0EE /* Build configuration list for PBXProject "PlaneTalk" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF884ECF23F76408002CB0EE /* Debug */,
@@ -400,7 +416,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EF884ED123F76408002CB0EE /* Build configuration list for PBXNativeTarget "SendiOS" */ = {
+		EF884ED123F76408002CB0EE /* Build configuration list for PBXNativeTarget "PlaneTalk" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EF884ED223F76408002CB0EE /* Debug */,

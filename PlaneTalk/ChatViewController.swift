@@ -117,6 +117,8 @@ final class ChatViewController: UIViewController {
 	}
 
 	private func setupTableview() {
+		let bubbleNib = UINib(nibName: "MessageTableViewCell", bundle: nil)
+		tableView.register(bubbleNib, forCellReuseIdentifier: "BubbleView")
 		tableView.delegate = self
 		tableView.dataSource = self
 	}
@@ -137,9 +139,13 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 	}
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
-		cell.textLabel?.text = messages[indexPath.row]
+		let cell = tableView.dequeueReusableCell(withIdentifier: "BubbleView", for: indexPath) as! MessageTableViewCell
+		cell.configureWithText(messages[indexPath.row])
 		return cell
+	}
+
+	func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+		return UITableView.automaticDimension
 	}
 }
 
