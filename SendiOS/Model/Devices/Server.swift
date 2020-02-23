@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Server: BroadcastDevice {
+final class Server: BroadcastDevice {
 	weak var roleGrantDelegate: RoleGrantDelegate?
 	weak var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate?
 	weak var presenter: MessagePresenter?
@@ -27,12 +27,13 @@ class Server: BroadcastDevice {
 	private let tcpKQueue: Int32 = kqueue()
 
 	// Map of the fd and their IPs
-	private var connectionSockets: [Int32: String] = [:]
+	private var connectionSockets: [Int32: User] = [:]
 	// Array of all the kevents
 	private var kEvents: [kevent] = []
 
 	let maxListeningConnections: Int32 = 5
 
+	private var nickname: String?
 	var ip: String
 	var broadcastIP: String
 
@@ -144,8 +145,8 @@ class Server: BroadcastDevice {
 					close(Int32(fd))
 				} else if incoming_tcp_connections_socket == fd {
 					handleNewConnection()
-				} else if let fd_and_ip = connectionSockets.first(where: ({ $0.key == fd })) {
-					incomingMessage(socket: fd_and_ip.key, senderIP: fd_and_ip.value)
+				} else if let fd_and_user = connectionSockets.first(where: ({ $0.key == fd })) {
+					incomingMessage(socket: fd_and_user.key, user: fd_and_user.value)
 				}
 			}
 		default:
@@ -170,7 +171,7 @@ class Server: BroadcastDevice {
 			exit(-1)
 		}
 
-		connectionSockets[connection_socket_and_client_ip.fd] = connection_socket_and_client_ip.IP
+		connectionSockets[connection_socket_and_client_ip.fd] = User(IP: connection_socket_and_client_ip.IP)
 
 		// Create the kevent structure that sets up our kqueue to listen
         // for notifications
@@ -189,7 +190,8 @@ class Server: BroadcastDevice {
 		print("TCP Connection accepted")
 	}
 
-	private func incomingMessage(socket: Int32, senderIP: String) {
+	// A message from a client is coming
+	private func incomingMessage(socket: Int32, user: User) {
 		let receivedStringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 		let rawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
 
@@ -202,11 +204,24 @@ class Server: BroadcastDevice {
 			return
 		}
 		let string = String(cString: UnsafePointer(baseAddress))
-		sendMessageViaTCPWithAddress("\(senderIP): \(string)", addressSocket: socket)
+		// Handle the message in order to understand whether is a standard message or a nick change request
+		handleClientMessage(string, socket: socket, user: user)
 	}
 
-	private func sendMessageViaTCPWithAddress(_ message: String, addressSocket: Int32) {
-		for event in kEvents where event.ident != UInt(addressSocket) {
+	private func handleClientMessage(_ string: String, socket: Int32, user: User) {
+		// Check if it's a nickname change request
+		if let newNickname = checkPossibleChangeNicknameRegex(in: string) {
+			connectionSockets[socket]?.changeNickname(newNickname)
+			sendMessageToEveryone("\(user.IP) is now \(newNickname)")
+		} else {
+			let sender = user.nickname == nil ? user.IP : user.nickname!
+			sendClientMessage("\(sender): \(string)", clientSocket: socket)
+		}
+	}
+
+	// Send the message of the client whose socket is clientSocket to all of the other clients
+	private func sendClientMessage(_ message: String, clientSocket: Int32) {
+		for event in kEvents where event.ident != UInt(clientSocket) {
 			let fd = event.ident
 
 			message.withCString { cString in
@@ -215,28 +230,73 @@ class Server: BroadcastDevice {
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Propagated by the server to socket \(addressSocket)")
+					print("Propagated by the server to socket \(clientSocket)")
 				}
 			}
 		}
 		presenter?.show(text: message)
 	}
 
-	func sendMessageViaTCP(_ message: String) {
-		let messageWithServerAddress = "\(ip): \(message)"
+	func sendServerMessage(_ message: String) {
+		// Check if it's a nickname change request
+		if let newNickname = checkPossibleChangeNicknameRegex(in: message) {
+			nickname = newNickname
+			sendMessageToEveryone("\(ip) is now \(newNickname)")
+		} else {
+			let serverAlias = nickname == nil ? ip : nickname!
+			let messageForEveryone = "\(serverAlias): \(message)"
+
+			for event in kEvents {
+				let fd = event.ident
+
+				messageForEveryone.withCString { cString in
+					let messageLength = Int(strlen(cString))
+					let bytes = send(Int32(fd), cString, messageLength, 0)
+					if bytes < 0 {
+						print("Error sending TCP Message")
+					} else {
+						print("Sent by server: \(message)")
+						presenter?.show(text: message)
+					}
+				}
+			}
+		}
+	}
+
+	func sendMessageToEveryone(_ message: String) {
 		for event in kEvents {
 			let fd = event.ident
 
-			messageWithServerAddress.withCString { cString in
+			message.withCString { cString in
 				let messageLength = Int(strlen(cString))
 				let bytes = send(Int32(fd), cString, messageLength, 0)
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Sent by server: \(messageWithServerAddress)")
+					print("Sent by server: \(message)")
 					presenter?.show(text: message)
 				}
 			}
 		}
+	}
+
+	private func checkPossibleChangeNicknameRegex(in string: String) -> String? {
+		let regexRange = NSRange(string.startIndex..., in: string)
+
+		guard
+			let regex = try? NSRegularExpression(pattern: Constant.nicknameRegex),
+			let match = regex.matches(in: string, range: regexRange).first
+		else {
+			return nil
+		}
+
+		let matchRange = match.range(at: 1)
+
+		guard matchRange != NSRange(location: NSNotFound, length: 0) else {
+			print("Regex error")
+			return nil
+		}
+		let nickname = (string as NSString).substring(with: matchRange)
+		return nickname
 	}
 }

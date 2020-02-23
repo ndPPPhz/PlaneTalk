@@ -156,7 +156,6 @@ final class Client: BroadcastDevice {
 		let string = String(cString: UnsafePointer(baseAddress))
 		print("Received by the server: \(string)")
 		presenter?.show(text: string)
-
 	}
 
 	func sendToServerTCP(_ text: String) {

@@ -51,7 +51,7 @@ final class RoleManager: ServerIPProvider {
 			let server = server,
 			isServer
 		{
-			server.sendMessageViaTCP(message)
+			server.sendServerMessage(message)
 		}
 	}
 }

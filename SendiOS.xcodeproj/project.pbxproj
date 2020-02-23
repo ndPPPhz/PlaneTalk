@@ -22,6 +22,7 @@
 		EF884ECD23F76408002CB0EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */; };
 		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
 		EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Extensions.swift */; };
+		EF95F8102402E35C0002C047 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80F2402E35C0002C047 /* User.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		EF884ECE23F76408002CB0EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
 		EF95F80B2402D5D20002C047 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		EF95F80F2402E35C0002C047 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,7 +90,7 @@
 				EF884EC223F76403002CB0EE /* SceneDelegate.swift */,
 				EF884EC423F76403002CB0EE /* ChatViewController.swift */,
 				EF95F80E2402D7380002C047 /* Controllers */,
-				EF50585F23FF0BEB001020FD /* Devices */,
+				EF95F8112402E3660002C047 /* Model */,
 				EF95F80D2402D65D0002C047 /* Supporting Files */,
 			);
 			path = SendiOS;
@@ -110,12 +112,21 @@
 		EF95F80E2402D7380002C047 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				EF50585523FEDC84001020FD /* Interface.swift */,
 				EF50585323FEDB4B001020FD /* InterfaceFinder.swift */,
 				EF50585B23FEF5C3001020FD /* RoleManager.swift */,
 				EF95F8092402CDF30002C047 /* Connector.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		EF95F8112402E3660002C047 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				EF50585F23FF0BEB001020FD /* Devices */,
+				EF95F80F2402E35C0002C047 /* User.swift */,
+				EF50585523FEDC84001020FD /* Interface.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -189,6 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF95F8102402E35C0002C047 /* User.swift in Sources */,
 				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
 				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
 				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,

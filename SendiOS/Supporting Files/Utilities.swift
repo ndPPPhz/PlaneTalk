@@ -14,7 +14,8 @@ let tcpPort: UInt16 = 8010
 enum Constant {
 	static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
 	static let serverResponse = "CHAT-SERVER-RESPONSE-"
-
+	static let nicknameRegex = "^/name: ([0-z]{4,})$"
+	
 	enum Message {
 		static let searchingServer = "Searching a server nearby"
 		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"
