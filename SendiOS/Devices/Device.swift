@@ -13,29 +13,23 @@ struct Message {
 	let senderIP: String
 }
 
-protocol BroadcastMessagesDeviceDelegate: AnyObject {
-	func deviceDidReceiveMessage(message: Message)
-}
-
-protocol RoleGrantDelegate: AnyObject {
-	func askServerPermissions(_ device: Device)
-}
-
 protocol Device: AnyObject {
 	var ip: String { get }
+	var broadcastIP: String { get }
+}
 
+protocol BroadcastDevice: Device {
 	var udp_broadcast_message_socket: Int32 { get }
 	var udp_reception_message_socket: Int32 { get }
 
 	var broadcastKQueue: Int32 { get }
 
-	var networkInformationProvider: NetworkInformationProvider { get }
 	var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate? { get }
 	var roleGrantDelegate: RoleGrantDelegate? { get }
 	var presenter: MessagePresenter? { get }
 }
 
-extension Device {
+extension BroadcastDevice {
 	func bindForUDPMessages() {
 		guard
 			udp_reception_message_socket >= 0
@@ -141,12 +135,10 @@ extension Device {
 			exit(-1)
 		}
 
-		let br_ip = networkInformationProvider.broadcast
-
 		var socket_broadcast_address = sockaddr_in()
 		// set the socket
 		socket_broadcast_address.sin_family = sa_family_t(AF_INET)
-		socket_broadcast_address.sin_addr.s_addr = inet_addr(br_ip)
+		socket_broadcast_address.sin_addr.s_addr = inet_addr(broadcastIP)
 		socket_broadcast_address.sin_port = htons(value: 9010)
 
 		let broadcast = 1;
@@ -166,7 +158,7 @@ extension Device {
 	func findServer() {
 		Constant.serverDiscovery.withCString { cString in
 			let broadcastMessageLength = Int(strlen(cString))
-			let socket_address_broadcast = generateBroadcastSockAddrIn(source_address: networkInformationProvider.broadcast)
+			let socket_address_broadcast = generateBroadcastSockAddrIn(source_address: broadcastIP)
 
 			withUnsafePointer(to: socket_address_broadcast) { broadcastAddressPtr in
 				let rawBroadcastAddressPtr = UnsafeRawPointer(broadcastAddressPtr).bindMemory(to: sockaddr.self, capacity: 1)
@@ -188,7 +180,7 @@ extension Device {
 			return
 		}
 		
-		var socket_broadcast_address = generateBroadcastSockAddrIn(source_address: networkInformationProvider.broadcast)
+		var socket_broadcast_address = generateBroadcastSockAddrIn(source_address: broadcastIP)
 
 		text.withCString { cstr -> Void in
 			let sentBytes: Int = withUnsafePointer(to: &socket_broadcast_address) { socketBroadcastAddressPtr in

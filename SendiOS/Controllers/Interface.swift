@@ -8,13 +8,8 @@
 
 import Foundation
 
-protocol NetworkInformationProvider {
-	var ip: String { get }
-	var broadcast: String { get }
-}
-
-struct Interface: NetworkInformationProvider {
+struct Interface {
 	let name: String
 	let ip: String
-	let broadcast: String
+	let broadcastIP: String
 }

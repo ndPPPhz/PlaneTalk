@@ -8,33 +8,30 @@
 
 import Foundation
 
-protocol MessagePresenter: AnyObject {
-	func show(text: String)
-}
-
-class Client: Device {
+final class Client: BroadcastDevice {
 	var ip: String
+	var broadcastIP: String
 
-	var udp_broadcast_message_socket: Int32
-	var udp_reception_message_socket: Int32
-	var client_tcp_socket_fd: Int32
+	// Client udp broadcast socket
+	var udp_broadcast_message_socket: Int32 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+	// Server udp reception socket
+	var udp_reception_message_socket: Int32 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+	// TCP socket with the server
+	var client_tcp_socket_fd: Int32 = socket(AF_INET, SOCK_STREAM, 0)
 
-	lazy var tcpEventQueue = kqueue()
-	var broadcastKQueue: Int32
+	// The kqueue for all the tcp events
+	private lazy var tcpEventQueue = kqueue()
+	// The kqueue for all the tcp events
+	lazy var broadcastKQueue: Int32 = kqueue()
 
-	var networkInformationProvider: NetworkInformationProvider
 	weak var roleGrantDelegate: RoleGrantDelegate?
 	weak var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate?
 	weak var serverIPProvider: ServerIPProvider?
 	weak var presenter: MessagePresenter?
 
-	init(ip: String, networkInformationProvider: NetworkInformationProvider) {
+	init(ip: String, broadcastIP: String) {
 		self.ip = ip
-		self.networkInformationProvider = networkInformationProvider
-		udp_broadcast_message_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-		udp_reception_message_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-		client_tcp_socket_fd = socket(AF_INET, SOCK_STREAM, 0)
-		broadcastKQueue = kqueue()
+		self.broadcastIP = broadcastIP
 	}
 
 	func startTCPconnectionToServer() {
@@ -163,13 +160,13 @@ class Client: Device {
 	}
 
 	func sendToServerTCP(_ text: String) {
-		text.withCString { cstr -> Void in
-			var server_tcp_sock_addr = sockaddr_in()
+		guard let serverIP = serverIPProvider?.serverIP else {
+			print("Server IP not found")
+			return
+		}
 
-			// assign IP, PORT
-			server_tcp_sock_addr.sin_family = sa_family_t(AF_INET)
-			server_tcp_sock_addr.sin_addr.s_addr = inet_addr(serverIPProvider?.serverIP)
-			server_tcp_sock_addr.sin_port = htons(value: 8010);
+		text.withCString { cstr -> Void in
+			var server_tcp_sock_addr = generateTCPSockAddrIn(server_address: serverIP)
 
 			let sentBytes: Int = withUnsafePointer(to: &server_tcp_sock_addr) {
 				let tcpMessageLength = Int(strlen(cstr))

@@ -11,6 +11,25 @@ import Foundation
 let udpPort: UInt16 = 9010
 let tcpPort: UInt16 = 8010
 
+enum Constant {
+	static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
+	static let serverResponse = "CHAT-SERVER-RESPONSE-"
+
+	enum Message {
+		static let searchingServer = "Searching a server nearby"
+		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"
+	}
+
+	enum Interface {
+		static let hotspot = "bridge"
+		static let wlan = "en0"
+	}
+}
+
+func htons(value: CUnsignedShort) -> CUnsignedShort {
+    return (value << 8) + (value >> 8)
+}
+
 func ipAddress(from sockaddr_in: sockaddr_in) -> String {
 	return String(cString: inet_ntoa(sockaddr_in.sin_addr))
 }

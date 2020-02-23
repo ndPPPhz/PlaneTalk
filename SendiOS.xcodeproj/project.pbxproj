@@ -16,10 +16,12 @@
 		EF5058612400A5A1001020FD /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5058602400A5A1001020FD /* Utilities.swift */; };
 		EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC023F76403002CB0EE /* AppDelegate.swift */; };
 		EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC223F76403002CB0EE /* SceneDelegate.swift */; };
-		EF884EC523F76403002CB0EE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC423F76403002CB0EE /* ViewController.swift */; };
+		EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC423F76403002CB0EE /* ChatViewController.swift */; };
 		EF884EC823F76403002CB0EE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF884EC623F76403002CB0EE /* Main.storyboard */; };
 		EF884ECA23F76408002CB0EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF884EC923F76408002CB0EE /* Assets.xcassets */; };
 		EF884ECD23F76408002CB0EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */; };
+		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
+		EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,11 +35,13 @@
 		EF884EBD23F76403002CB0EE /* SendiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SendiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF884EC023F76403002CB0EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EF884EC223F76403002CB0EE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		EF884EC423F76403002CB0EE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		EF884EC423F76403002CB0EE /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		EF884EC723F76403002CB0EE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		EF884EC923F76408002CB0EE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EF884ECC23F76408002CB0EE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EF884ECE23F76408002CB0EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
+		EF95F80B2402D5D20002C047 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,18 +86,36 @@
 			children = (
 				EF884EC023F76403002CB0EE /* AppDelegate.swift */,
 				EF884EC223F76403002CB0EE /* SceneDelegate.swift */,
-				EF884EC423F76403002CB0EE /* ViewController.swift */,
-				EF50585323FEDB4B001020FD /* InterfaceFinder.swift */,
-				EF50585523FEDC84001020FD /* Interface.swift */,
-				EF50585B23FEF5C3001020FD /* RoleManager.swift */,
-				EF5058602400A5A1001020FD /* Utilities.swift */,
+				EF884EC423F76403002CB0EE /* ChatViewController.swift */,
+				EF95F80E2402D7380002C047 /* Controllers */,
 				EF50585F23FF0BEB001020FD /* Devices */,
-				EF884EC623F76403002CB0EE /* Main.storyboard */,
-				EF884EC923F76408002CB0EE /* Assets.xcassets */,
-				EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */,
-				EF884ECE23F76408002CB0EE /* Info.plist */,
+				EF95F80D2402D65D0002C047 /* Supporting Files */,
 			);
 			path = SendiOS;
+			sourceTree = "<group>";
+		};
+		EF95F80D2402D65D0002C047 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				EF5058602400A5A1001020FD /* Utilities.swift */,
+				EF95F80B2402D5D20002C047 /* Extensions.swift */,
+				EF884EC623F76403002CB0EE /* Main.storyboard */,
+				EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */,
+				EF884EC923F76408002CB0EE /* Assets.xcassets */,
+				EF884ECE23F76408002CB0EE /* Info.plist */,
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EF95F80E2402D7380002C047 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EF50585523FEDC84001020FD /* Interface.swift */,
+				EF50585323FEDB4B001020FD /* InterfaceFinder.swift */,
+				EF50585B23FEF5C3001020FD /* RoleManager.swift */,
+				EF95F8092402CDF30002C047 /* Connector.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -167,12 +189,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF884EC523F76403002CB0EE /* ViewController.swift in Sources */,
+				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
+				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
 				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,
 				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
 				EF50585E23FF0B2B001020FD /* Device.swift in Sources */,
 				EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */,
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
+				EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */,
 				EF50585C23FEF5C3001020FD /* RoleManager.swift in Sources */,
 				EF50585823FEDEF4001020FD /* Server.swift in Sources */,
 				EF5058612400A5A1001020FD /* Utilities.swift in Sources */,
@@ -322,7 +346,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 62KK4CLZ8M;
-				INFOPLIST_FILE = SendiOS/Info.plist;
+				INFOPLIST_FILE = "SendiOS/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -340,7 +364,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 62KK4CLZ8M;
-				INFOPLIST_FILE = SendiOS/Info.plist;
+				INFOPLIST_FILE = "SendiOS/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ChatViewController.swift
 //  SendiOS
 //
 //  Created by Annino De Petra on 14/02/2020.
@@ -8,28 +8,16 @@
 
 import UIKit
 
-enum Constant {
-	static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
-	static let serverResponse = "CHAT-SERVER-RESPONSE-"
-
-	enum Message {
-		static let searchingServer = "Searching a server nearby"
-		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"
-	}
+protocol MessagePresenter: AnyObject {
+	func show(text: String)
 }
 
-func htons(value: CUnsignedShort) -> CUnsignedShort {
-    return (value << 8) + (value >> 8)
-}
-
-class ViewController: UIViewController {
-
+final class ChatViewController: UIViewController {
 	@IBOutlet private var textViewBottomConstraint: NSLayoutConstraint!
 	@IBOutlet private var tableView: UITableView!
 	@IBOutlet private var textView: UITextView!
 
-	private var roleManager: RoleManager!
-	private var networkInformationProvider: NetworkInformationProvider?
+	private var roleManager: RoleManager?
 
 	private var messages: [String] = [] {
 		didSet {
@@ -44,49 +32,41 @@ class ViewController: UIViewController {
 		addGestureRecognizer()
 		setupTableview()
 
-		retrieveNetworkInformation()
-
-		roleManager.currentDevice.bindForUDPMessages()
-		roleManager.currentDevice.createBroadcastKqueue()
-		
-		roleManager.currentDevice.enableTransmissionToBroadcast()
-		roleManager.currentDevice.findServer()
-	}
-
-	private func retrieveNetworkInformation() {
-		let availableInterfaces = InterfaceFinder.getAvailableInterfaces()
+		let availableInterfaces = retrieveNetworkInformation()
 		connectToInterface(availableInterfaces)
 	}
 
+	private func retrieveNetworkInformation() ->  [Interface] {
+		let availableInterfaces = InterfaceFinder.getAvailableInterfaces()
+		return availableInterfaces
+	}
+
 	private func connectToInterface(_ interfaces: [Interface]) {
-		let hotspotCondition: (Interface) -> Bool = { interface in
-			return interface.name.contains("bridge")
-		}
-
-		let wlanCondition: (Interface) -> Bool = { interface in
-			return interface.name == "en0"
-		}
-
-		let foundInterfaceClosure: (Interface) -> Void = { interface in
-			print("Connected to \(interface.name)")
-			let currentDevice = Client(ip: interface.ip, networkInformationProvider: interface)
-			self.roleManager = RoleManager(currentDevice: currentDevice)
-			currentDevice.broadcastMessagesDelegate = self.roleManager
-			currentDevice.roleGrantDelegate = self.roleManager
-			currentDevice.serverIPProvider = self.roleManager
-			currentDevice.presenter = self
-			self.networkInformationProvider = interface
-		}
-
-		// First check if the hotstop is available then wlan
-		if let hotspotInterface = interfaces.first (where: hotspotCondition) {
-			foundInterfaceClosure(hotspotInterface)
-		} else if let wlanInterface = interfaces.first (where: wlanCondition) {
-			foundInterfaceClosure(wlanInterface)
-		} else {
+		let connector = Connector(availableInterfaces: interfaces)
+		guard let connectedInterface = connector.connect() else {
 			print("Error: interface not found")
-			exit(-1)
+			return
 		}
+		print("Connected to \(connectedInterface.name)")
+		initialiseDeviceWith(connectedInterface)
+	}
+
+	private func initialiseDeviceWith(_ connectedInterface: Interface) {
+		let currentDevice = Client(ip: connectedInterface.ip,
+								   broadcastIP: connectedInterface.broadcastIP
+		)
+
+		self.roleManager = RoleManager(currentDevice: currentDevice)
+		currentDevice.broadcastMessagesDelegate = roleManager
+		currentDevice.roleGrantDelegate = roleManager
+		currentDevice.serverIPProvider = roleManager
+		currentDevice.presenter = self
+
+		// Open a socket, create a queue for handling the oncoming events, enable transmission of broadcast messages and find a server
+		currentDevice.bindForUDPMessages()
+		currentDevice.createBroadcastKqueue()
+		currentDevice.enableTransmissionToBroadcast()
+		currentDevice.findServer()
 	}
 
 	private func addNewMessage(_ message: String) {
@@ -125,7 +105,7 @@ class ViewController: UIViewController {
 	private func setBottomConstraint(_ constant: CGFloat, duration: Double) {
 		let newBottomConstant = constant
 
-		UIView.animate(withDuration: duration, delay: 0, options: [], animations: {
+		UIView.animate(withDuration: duration, animations: {
 			self.textViewBottomConstraint.constant = newBottomConstant
 			self.view.layoutIfNeeded()
 		}, completion: nil)
@@ -146,12 +126,12 @@ class ViewController: UIViewController {
 	}
 
 	@IBAction func didTapSendButton(_ sender: Any) {
-		roleManager.send(textView.text)
+		roleManager?.send(textView.text)
 		view.endEditing(true)
 	}
 }
 
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 	func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		return messages.count
 	}
@@ -161,25 +141,9 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
 		cell.textLabel?.text = messages[indexPath.row]
 		return cell
 	}
-
-
 }
 
-extension Notification {
-	/// Returns the frame of the keyboard.
-	///
-	/// - Note: If the keyboard is hidden due to a hardware keyboard then its
-	///         height remains the same but it's just hidden offscreen with a Y offset.
-	public var keyboardFrame: CGRect {
-		guard let userInfo = userInfo, let keyboardFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue else {
-			return .zero
-		}
-
-		return keyboardFrame
-	}
-}
-
-extension ViewController: MessagePresenter {
+extension ChatViewController: MessagePresenter {
 	func show(text: String) {
 		addNewMessage(text)
 	}

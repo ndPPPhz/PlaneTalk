@@ -8,12 +8,7 @@
 
 import Foundation
 
-class InterfaceFinder {
-	private enum Constant {
-		static let hotspotInterface = "bridge"
-		static let wlanInterface = "en0"
-	}
-
+final class InterfaceFinder {
 	static func getAvailableInterfaces() -> [Interface] {
 		var availableInterfaces: [Interface] = []
 		let interface_address = ifaddrs()
@@ -46,7 +41,7 @@ class InterfaceFinder {
 
 					let interface = String(cString: interfaceName)
 
-					if interface.contains(Constant.hotspotInterface) || interface == Constant.wlanInterface {
+					if interface.contains(Constant.Interface.hotspot) || interface == Constant.Interface.wlan {
 						guard
 							let destinationAddress = UnsafeRawPointer(interfaceAddress.ifa_dstaddr)?.bindMemory(to: sockaddr_in.self, capacity: 1),
 							let myAddress = UnsafeRawPointer(interfaceAddress.ifa_addr)?.bindMemory(to: sockaddr_in.self, capacity: 1)
@@ -56,7 +51,7 @@ class InterfaceFinder {
 						let broadcastIPString = String(cString: inet_ntoa(destinationAddress.pointee.sin_addr))
 						let currentDeviceIPString = String(cString: inet_ntoa(myAddress.pointee.sin_addr))
 
-						let newInterface = Interface(name: interface, ip: currentDeviceIPString, broadcast: broadcastIPString)
+						let newInterface = Interface(name: interface, ip: currentDeviceIPString, broadcastIP: broadcastIPString)
 						availableInterfaces.append(newInterface)
 					}
 				} while interfaceAddress.ifa_next != nil

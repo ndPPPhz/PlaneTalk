@@ -8,8 +8,7 @@
 
 import Foundation
 
-class Server: Device {
-	var networkInformationProvider: NetworkInformationProvider
+class Server: BroadcastDevice {
 	weak var roleGrantDelegate: RoleGrantDelegate?
 	weak var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate?
 	weak var presenter: MessagePresenter?
@@ -35,17 +34,18 @@ class Server: Device {
 	let maxListeningConnections: Int32 = 5
 
 	var ip: String
+	var broadcastIP: String
 
 	init(
 		ip: String,
+		broadcastIP: String,
 		udp_broadcast_message_socket: Int32,
-		udp_reception_message_socket: Int32,
-		networkInformationProvider: NetworkInformationProvider
+		udp_reception_message_socket: Int32
 	) {
 		self.ip = ip
+		self.broadcastIP = broadcastIP
 		self.udp_broadcast_message_socket = udp_broadcast_message_socket
 		self.udp_reception_message_socket = udp_reception_message_socket
-		self.networkInformationProvider = networkInformationProvider
 	}
 
 	func createTCPSocket() {
