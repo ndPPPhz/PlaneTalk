@@ -234,7 +234,7 @@ final class Server: BroadcastDevice {
 				}
 			}
 		}
-		presenter?.show(text: message)
+		presenter?.show(text: message, isMine: false)
 	}
 
 	func sendServerMessage(_ message: String) {
@@ -256,7 +256,7 @@ final class Server: BroadcastDevice {
 						print("Error sending TCP Message")
 					} else {
 						print("Sent by server: \(message)")
-						presenter?.show(text: message)
+						presenter?.show(text: message, isMine: true)
 					}
 				}
 			}
@@ -274,7 +274,7 @@ final class Server: BroadcastDevice {
 					print("Error sending TCP Message")
 				} else {
 					print("Sent by server: \(message)")
-					presenter?.show(text: message)
+					presenter?.show(text: message, isMine: false)
 				}
 			}
 		}

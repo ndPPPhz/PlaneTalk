@@ -9,17 +9,43 @@
 import UIKit
 
 protocol MessagePresenter: AnyObject {
-	func show(text: String)
+	func show(text: String, isMine: Bool)
 }
 
 final class ChatViewController: UIViewController {
-	@IBOutlet private var textViewBottomConstraint: NSLayoutConstraint!
-	@IBOutlet private var tableView: UITableView!
-	@IBOutlet private var textView: UITextView!
+	enum Constant {
+		static let navigatioBarBackgroundColor = UIColor(white: 0.96, alpha: 1)
+		static let keyboardGap: CGFloat = 38
+		static let viewBackgroundColor = UIColor(red: 246/255, green: 245/255, blue: 246/255, alpha: 1)
+		static let outgoingMessageBubbleColor = UIColor(red: 70/255, green: 181/255, blue: 85/255, alpha: 1)
+		static let incomingMessageBubbleColor = UIColor(white: 0.972, alpha: 1)
+	}
 
+	@IBOutlet private var tableView: UITableView!
+	@IBOutlet private var textBoardViewContainerBottomConstraint: NSLayoutConstraint!
+	@IBOutlet private var textBoardViewContainer: UIView! {
+		didSet {
+			textBoardView.embed(into: textBoardViewContainer)
+		}
+	}
+
+	private var textBoardView = TextBoardView.instantiateFromNib()
 	private var roleManager: RoleManager?
 
-	private var messages: [String] = [] {
+	private var messages: [(String, Bool)] = [
+		("Hello guys", true),
+		("What are you doing", false),
+		("I'm wasting my time here at home watching tv series and nothing else. I would like to hang out with some friends to be honest", true),
+		("You're fucking ridicolous cause you don't know exactly lorem ipsum dolet and you cannot be called developer if you dont know it. What's wrong with out dummy engineer", false),
+		("Hello guys", true),
+		("What are you doing", false),
+		("I'm wasting my time here at home watching tv series and nothing else. I would like to hang out with some friends to be honest", true),
+		("You're fucking ridicolous cause you don't know exactly lorem ipsum dolet and you cannot be called developer if you dont know it. What's wrong with out dummy engineer", false),
+		("Hello guys", true),
+		("What are you doing", false),
+		("I'm wasting my time here at home watching tv series and nothing else. I would like to hang out with some friends to be honest", true),
+		("You're fucking ridicolous cause you don't know exactly lorem ipsum dolet and you cannot be called developer if you dont know it. What's wrong with out dummy engineer", false),
+	] {
 		didSet {
 			tableView.reloadData()
 		}
@@ -30,10 +56,11 @@ final class ChatViewController: UIViewController {
 
 		registerForKeyboard()
 		addGestureRecognizer()
-		setupTableview()
+		setupUI()
 
+		navigationController?.navigationBar.backgroundColor = Constant.navigatioBarBackgroundColor
 		let availableInterfaces = retrieveNetworkInformation()
-		connectToInterface(availableInterfaces)
+//		connectToInterface(availableInterfaces)
 	}
 
 	private func retrieveNetworkInformation() ->  [Interface] {
@@ -52,8 +79,9 @@ final class ChatViewController: UIViewController {
 	}
 
 	private func initialiseDeviceWith(_ connectedInterface: Interface) {
-		let currentDevice = Client(ip: connectedInterface.ip,
-								   broadcastIP: connectedInterface.broadcastIP
+		let currentDevice = Client(
+			ip: connectedInterface.ip,
+			broadcastIP: connectedInterface.broadcastIP
 		)
 
 		self.roleManager = RoleManager(currentDevice: currentDevice)
@@ -69,11 +97,11 @@ final class ChatViewController: UIViewController {
 		currentDevice.findServer()
 	}
 
-	private func addNewMessage(_ message: String) {
+	private func addNewMessage(_ message: String, isMine: Bool) {
 		DispatchQueue.main.async { [weak self] in
 		   guard let _self = self else { return }
-		   _self.textView.text = ""
-		   _self.messages.insert(message, at: 0)
+			_self.textBoardView.clearTextfield()
+		   _self.messages.append((message, isMine))
 		}
 	}
 
@@ -91,14 +119,14 @@ final class ChatViewController: UIViewController {
 		else {
 			return
 		}
-		setBottomConstraint(endFrame.height, duration: duration)
+		let constant = PlatformUtils.hasHomeIndicator ? -(endFrame.height - Constant.keyboardGap) : endFrame.height
+		setBottomConstraint(constant, duration: duration)
 	}
 
 	@objc private func keyboardWillHide(_ notification: Notification!) {
 		guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else {
 			return
 		}
-
 		setBottomConstraint(0, duration: duration)
 	}
 
@@ -106,9 +134,9 @@ final class ChatViewController: UIViewController {
 		let newBottomConstant = constant
 
 		UIView.animate(withDuration: duration, animations: {
-			self.textViewBottomConstraint.constant = newBottomConstant
+			self.textBoardViewContainerBottomConstraint.constant = newBottomConstant
 			self.view.layoutIfNeeded()
-		}, completion: nil)
+		})
 	}
 
 	private func addGestureRecognizer() {
@@ -116,19 +144,16 @@ final class ChatViewController: UIViewController {
 		tableView.addGestureRecognizer(tap)
 	}
 
-	private func setupTableview() {
-		let bubbleNib = UINib(nibName: "MessageTableViewCell", bundle: nil)
-		tableView.register(bubbleNib, forCellReuseIdentifier: "BubbleView")
+	private func setupUI() {
+		let messageTableViewCellNib = MessageTableViewCell.nib
+		tableView.register(messageTableViewCellNib, forCellReuseIdentifier: MessageTableViewCell.reuseIdentifier)
 		tableView.delegate = self
 		tableView.dataSource = self
+
+		view.backgroundColor = Constant.viewBackgroundColor
 	}
 
 	@objc private func didTapOnTableview() {
-		view.endEditing(true)
-	}
-
-	@IBAction func didTapSendButton(_ sender: Any) {
-		roleManager?.send(textView.text)
 		view.endEditing(true)
 	}
 }
@@ -140,7 +165,16 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: "BubbleView", for: indexPath) as! MessageTableViewCell
-		cell.configureWithText(messages[indexPath.row])
+
+
+		let message = messages[indexPath.row]
+		let viewData = MessageTableViewCell.ViewData(
+			text: message.0, textColor: message.1 ? .white : .black,
+			backgroundColor: message.1 ? Constant.outgoingMessageBubbleColor : Constant.incomingMessageBubbleColor,
+			alignment: message.1 ? .right : .left
+		)
+
+		cell.configure(with: viewData)
 		return cell
 	}
 
@@ -150,7 +184,14 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension ChatViewController: MessagePresenter {
-	func show(text: String) {
-		addNewMessage(text)
+	func show(text: String, isMine: Bool) {
+		addNewMessage(text, isMine: isMine)
+	}
+}
+
+extension ChatViewController: TextBoardViewDelegate {
+	func textBoard(_ textBoard: TextBoardView, didPressSendButtonWith text: String) {
+		roleManager?.send(text)
+		view.endEditing(true)
 	}
 }

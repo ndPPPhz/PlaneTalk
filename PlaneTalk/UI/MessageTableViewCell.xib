@@ -9,33 +9,44 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="MessageTableViewCell" customModule="SendiOS" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="96" id="KGk-i7-Jjw" customClass="MessageTableViewCell" customModule="PlaneTalk" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="96"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="96"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="78x-m3-6On">
-                        <rect key="frame" x="8" y="8" width="304" height="28"/>
-                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="17"/>
-                        <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="0.88299978595890416" colorSpace="custom" customColorSpace="sRGB"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="78x-m3-6On">
+                        <rect key="frame" x="32" y="32" width="37" height="32"/>
+                        <fontDescription key="fontDescription" type="system" weight="light" pointSize="15"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
-                <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="0.56236622431506844" colorSpace="custom" customColorSpace="sRGB"/>
+                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="78x-m3-6On" secondAttribute="trailing" constant="8" id="AQp-DL-A93"/>
-                    <constraint firstAttribute="bottom" secondItem="78x-m3-6On" secondAttribute="bottom" constant="8" id="BoG-S6-yiE"/>
-                    <constraint firstItem="78x-m3-6On" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="Xdm-27-0xv"/>
-                    <constraint firstItem="78x-m3-6On" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="sbK-3S-wKK"/>
+                    <constraint firstAttribute="bottom" secondItem="78x-m3-6On" secondAttribute="bottom" constant="32" id="BoG-S6-yiE"/>
+                    <constraint firstItem="78x-m3-6On" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="32" id="Xdm-27-0xv"/>
+                    <constraint firstAttribute="trailing" secondItem="78x-m3-6On" secondAttribute="trailing" constant="32" id="qsl-9d-BWu"/>
+                    <constraint firstItem="78x-m3-6On" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="32" id="sbK-3S-wKK"/>
+                    <constraint firstItem="78x-m3-6On" firstAttribute="width" relation="lessThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="width" multiplier="0.76" id="xPh-Uq-G7s"/>
                 </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="qsl-9d-BWu"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="messageLabel" destination="78x-m3-6On" id="F8f-Dd-oxp"/>
+                <outlet property="messageLabelBottomConstraint" destination="BoG-S6-yiE" id="oFz-CL-mMG"/>
+                <outlet property="messageLabelLeadingConstraint" destination="sbK-3S-wKK" id="Dzv-qf-Q76"/>
+                <outlet property="messageLabelTopConstraint" destination="Xdm-27-0xv" id="naV-Iv-s00"/>
+                <outlet property="messageLabelTrailingConstraint" destination="qsl-9d-BWu" id="Mpa-eF-PCk"/>
             </connections>
-            <point key="canvasLocation" x="-188" y="121"/>
+            <point key="canvasLocation" x="-439.13043478260875" y="1.3392857142857142"/>
         </tableViewCell>
     </objects>
 </document>

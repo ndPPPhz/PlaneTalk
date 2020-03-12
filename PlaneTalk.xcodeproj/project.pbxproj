@@ -20,11 +20,20 @@
 		EF884EC823F76403002CB0EE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF884EC623F76403002CB0EE /* Main.storyboard */; };
 		EF884ECA23F76408002CB0EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EF884EC923F76408002CB0EE /* Assets.xcassets */; };
 		EF884ECD23F76408002CB0EE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */; };
+		EF8CBE5C241AB343009AB2D0 /* PlatformUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */; };
+		EF8CBE5E241AB547009AB2D0 /* Reusable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE5D241AB547009AB2D0 /* Reusable.swift */; };
+		EF8CBE60241AB582009AB2D0 /* UITableView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */; };
 		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
 		EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Extensions.swift */; };
 		EF95F8102402E35C0002C047 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80F2402E35C0002C047 /* User.swift */; };
 		EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F82E240309370002C047 /* MessageTableViewCell.swift */; };
 		EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF95F82F240309370002C047 /* MessageTableViewCell.xib */; };
+		EF9C42DB241A564F00564AC2 /* ViewDataConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */; };
+		EF9C42E1241A858F00564AC2 /* TextBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9C42E0241A858F00564AC2 /* TextBoardView.swift */; };
+		EF9C42E3241A859900564AC2 /* TextBoardView.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF9C42E2241A859900564AC2 /* TextBoardView.xib */; };
+		EF9C42E5241A889000564AC2 /* NibLoadable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9C42E4241A889000564AC2 /* NibLoadable.swift */; };
+		EF9C42E7241A899C00564AC2 /* Collection+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9C42E6241A899C00564AC2 /* Collection+Ext.swift */; };
+		EF9C42E9241A89B300564AC2 /* UIView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9C42E8241A89B200564AC2 /* UIView+Ext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,11 +52,20 @@
 		EF884EC923F76408002CB0EE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		EF884ECC23F76408002CB0EE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EF884ECE23F76408002CB0EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformUtils.swift; sourceTree = "<group>"; };
+		EF8CBE5D241AB547009AB2D0 /* Reusable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reusable.swift; sourceTree = "<group>"; };
+		EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Ext.swift"; sourceTree = "<group>"; };
 		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
 		EF95F80B2402D5D20002C047 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		EF95F80F2402E35C0002C047 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		EF95F82E240309370002C047 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		EF95F82F240309370002C047 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
+		EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataConfigurable.swift; sourceTree = "<group>"; };
+		EF9C42E0241A858F00564AC2 /* TextBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextBoardView.swift; sourceTree = "<group>"; };
+		EF9C42E2241A859900564AC2 /* TextBoardView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextBoardView.xib; sourceTree = "<group>"; };
+		EF9C42E4241A889000564AC2 /* NibLoadable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NibLoadable.swift; sourceTree = "<group>"; };
+		EF9C42E6241A899C00564AC2 /* Collection+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Ext.swift"; sourceTree = "<group>"; };
+		EF9C42E8241A89B200564AC2 /* UIView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Ext.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,6 +122,13 @@
 		EF95F80D2402D65D0002C047 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */,
+				EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */,
+				EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */,
+				EF9C42E4241A889000564AC2 /* NibLoadable.swift */,
+				EF9C42E6241A899C00564AC2 /* Collection+Ext.swift */,
+				EF9C42E8241A89B200564AC2 /* UIView+Ext.swift */,
+				EF8CBE5D241AB547009AB2D0 /* Reusable.swift */,
 				EF5058602400A5A1001020FD /* Utilities.swift */,
 				EF95F80B2402D5D20002C047 /* Extensions.swift */,
 				EF884EC623F76403002CB0EE /* Main.storyboard */,
@@ -139,6 +164,8 @@
 			children = (
 				EF95F82E240309370002C047 /* MessageTableViewCell.swift */,
 				EF95F82F240309370002C047 /* MessageTableViewCell.xib */,
+				EF9C42E0241A858F00564AC2 /* TextBoardView.swift */,
+				EF9C42E2241A859900564AC2 /* TextBoardView.xib */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -205,6 +232,7 @@
 				EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */,
 				EF884ECA23F76408002CB0EE /* Assets.xcassets in Resources */,
 				EF884EC823F76403002CB0EE /* Main.storyboard in Resources */,
+				EF9C42E3241A859900564AC2 /* TextBoardView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,17 +244,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF95F8102402E35C0002C047 /* User.swift in Sources */,
+				EF9C42E5241A889000564AC2 /* NibLoadable.swift in Sources */,
 				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
 				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
 				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,
 				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
+				EF8CBE5E241AB547009AB2D0 /* Reusable.swift in Sources */,
+				EF9C42E9241A89B300564AC2 /* UIView+Ext.swift in Sources */,
 				EF50585E23FF0B2B001020FD /* Device.swift in Sources */,
+				EF9C42E1241A858F00564AC2 /* TextBoardView.swift in Sources */,
 				EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */,
+				EF8CBE60241AB582009AB2D0 /* UITableView+Ext.swift in Sources */,
 				EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */,
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
+				EF8CBE5C241AB343009AB2D0 /* PlatformUtils.swift in Sources */,
+				EF9C42DB241A564F00564AC2 /* ViewDataConfigurable.swift in Sources */,
 				EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */,
 				EF50585C23FEF5C3001020FD /* RoleManager.swift in Sources */,
 				EF50585823FEDEF4001020FD /* Server.swift in Sources */,
+				EF9C42E7241A899C00564AC2 /* Collection+Ext.swift in Sources */,
 				EF5058612400A5A1001020FD /* Utilities.swift in Sources */,
 				EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */,
 			);
