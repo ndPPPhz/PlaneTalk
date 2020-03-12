@@ -24,26 +24,23 @@ final class Client: BroadcastDevice {
 	// The kqueue for all the tcp events
 	lazy var broadcastKQueue: Int32 = kqueue()
 
-	weak var roleGrantDelegate: RoleGrantDelegate?
-	weak var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate?
-	weak var serverIPProvider: ServerIPProvider?
-	weak var presenter: MessagePresenter?
+	weak var roleGrantDelegate: ManagerDelegate?
+	weak var communicationDelegate: CommunicationDelegate?
+	private var serverIP: String?
 
 	init(ip: String, broadcastIP: String) {
 		self.ip = ip
 		self.broadcastIP = broadcastIP
 	}
 
-	func startTCPconnectionToServer() {
+	func startTCPconnectionToServer(serverIP: String) {
 		if (client_tcp_socket_fd == -1) {
 			print("TCP Socket creation failed");
 			exit(-1);
 		}
 
-		guard let serverIP = serverIPProvider?.serverIP else {
-			print("You cannot connect to the server without a server")
-			return
-		}
+		// Save the serverIP
+		self.serverIP = serverIP
 
 		// The struct containing the address of the server (for the client)
 		let server_tcp_sock_addr = generateTCPSockAddrIn(server_address: serverIP)
@@ -154,12 +151,11 @@ final class Client: BroadcastDevice {
 		}
 
 		let string = String(cString: UnsafePointer(baseAddress))
-		print("Received by the server: \(string)")
-		presenter?.show(text: string, isMine: false)
+		communicationDelegate?.deviceDidReceiveTCPText(string)
 	}
 
 	func sendToServerTCP(_ text: String) {
-		guard let serverIP = serverIPProvider?.serverIP else {
+		guard let serverIP = serverIP else {
 			print("Server IP not found")
 			return
 		}
@@ -178,7 +174,7 @@ final class Client: BroadcastDevice {
 				return
 			}
 			print("Sent to the server: \(text)")
-			presenter?.show(text: text, isMine: true)
+			communicationDelegate?.deviceDidSendText(text)
 		}
 	}
 }

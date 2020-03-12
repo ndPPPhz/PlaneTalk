@@ -9,9 +9,8 @@
 import Foundation
 
 final class Server: BroadcastDevice {
-	weak var roleGrantDelegate: RoleGrantDelegate?
-	weak var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate?
-	weak var presenter: MessagePresenter?
+	weak var roleGrantDelegate: ManagerDelegate?
+	weak var communicationDelegate: CommunicationDelegate?
 
 	// Server udp broadcast socket
 	let udp_broadcast_message_socket: Int32
@@ -146,7 +145,7 @@ final class Server: BroadcastDevice {
 				} else if incoming_tcp_connections_socket == fd {
 					handleNewConnection()
 				} else if let fd_and_user = connectionSockets.first(where: ({ $0.key == fd })) {
-					incomingMessage(socket: fd_and_user.key, user: fd_and_user.value)
+					incomingClientTCPText(socket: fd_and_user.key, user: fd_and_user.value)
 				}
 			}
 		default:
@@ -171,6 +170,7 @@ final class Server: BroadcastDevice {
 			exit(-1)
 		}
 
+		// Save client ip with associated fd
 		connectionSockets[connection_socket_and_client_ip.fd] = User(IP: connection_socket_and_client_ip.IP)
 
 		// Create the kevent structure that sets up our kqueue to listen
@@ -191,7 +191,7 @@ final class Server: BroadcastDevice {
 	}
 
 	// A message from a client is coming
-	private func incomingMessage(socket: Int32, user: User) {
+	private func incomingClientTCPText(socket: Int32, user: User) {
 		let receivedStringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 		let rawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
 
@@ -205,22 +205,27 @@ final class Server: BroadcastDevice {
 		}
 		let string = String(cString: UnsafePointer(baseAddress))
 		// Handle the message in order to understand whether is a standard message or a nick change request
-		handleClientMessage(string, socket: socket, user: user)
+		handleClientTCPText(string, socket: socket, user: user)
 	}
 
-	private func handleClientMessage(_ string: String, socket: Int32, user: User) {
+	private func handleClientTCPText(_ text: String, socket: Int32, user: User) {
 		// Check if it's a nickname change request
-		if let newNickname = checkPossibleChangeNicknameRegex(in: string) {
+		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
 			connectionSockets[socket]?.changeNickname(newNickname)
-			sendMessageToEveryone("\(user.IP) is now \(newNickname)")
+			sendInformationText("\(user.IP) is now \(newNickname)")
 		} else {
-			let sender = user.nickname == nil ? user.IP : user.nickname!
-			sendClientMessage("\(sender): \(string)", clientSocket: socket)
+
+			sendClientMessage(text, user, clientSocket: socket)
 		}
 	}
 
 	// Send the message of the client whose socket is clientSocket to all of the other clients
-	private func sendClientMessage(_ message: String, clientSocket: Int32) {
+	private func sendClientMessage(_ text: String, _ user: User, clientSocket: Int32) {
+		guard let message = communicationDelegate?.serverWantsToSendClientTCPText(text, senderIP: user.IP) else {
+			print("Nil communicationDelegate")
+			return
+		}
+
 		for event in kEvents where event.ident != UInt(clientSocket) {
 			let fd = event.ident
 
@@ -234,17 +239,19 @@ final class Server: BroadcastDevice {
 				}
 			}
 		}
-		presenter?.show(text: message, isMine: false)
+		communicationDelegate?.serverDidSendClientText(text, clientIP: user.IP)
 	}
 
-	func sendServerMessage(_ message: String) {
+	func sendServerText(_ text: String) {
 		// Check if it's a nickname change request
-		if let newNickname = checkPossibleChangeNicknameRegex(in: message) {
+		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
 			nickname = newNickname
-			sendMessageToEveryone("\(ip) is now \(newNickname)")
+			sendInformationText("\(ip) is now \(newNickname)")
 		} else {
-			let serverAlias = nickname == nil ? ip : nickname!
-			let messageForEveryone = "\(serverAlias): \(message)"
+			guard let messageForEveryone = communicationDelegate?.serverWantsToSendOwnTCPText(text) else {
+				print("Nil communicationDelegate")
+				return
+			}
 
 			for event in kEvents {
 				let fd = event.ident
@@ -255,26 +262,26 @@ final class Server: BroadcastDevice {
 					if bytes < 0 {
 						print("Error sending TCP Message")
 					} else {
-						print("Sent by server: \(message)")
-						presenter?.show(text: message, isMine: true)
+						print("Sent by server: \(text)")
+						communicationDelegate?.serverDidSendText(text)
 					}
 				}
 			}
 		}
 	}
 
-	func sendMessageToEveryone(_ message: String) {
+	func sendInformationText(_ text: String) {
 		for event in kEvents {
 			let fd = event.ident
 
-			message.withCString { cString in
+			text.withCString { cString in
 				let messageLength = Int(strlen(cString))
 				let bytes = send(Int32(fd), cString, messageLength, 0)
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Sent by server: \(message)")
-					presenter?.show(text: message, isMine: false)
+					print("Sent by server: \(text)")
+					communicationDelegate?.serverDidSendInformationText(text)
 				}
 			}
 		}

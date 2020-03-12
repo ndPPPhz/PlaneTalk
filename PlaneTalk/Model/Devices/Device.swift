@@ -8,11 +8,6 @@
 
 import Foundation
 
-struct Message {
-	let text: String
-	let senderIP: String
-}
-
 protocol Device: AnyObject {
 	var ip: String { get }
 	var broadcastIP: String { get }
@@ -24,9 +19,8 @@ protocol BroadcastDevice: Device {
 
 	var broadcastKQueue: Int32 { get }
 
-	var broadcastMessagesDelegate: BroadcastMessagesDeviceDelegate? { get }
-	var roleGrantDelegate: RoleGrantDelegate? { get }
-	var presenter: MessagePresenter? { get }
+	var communicationDelegate: CommunicationDelegate? { get }
+	var roleGrantDelegate: ManagerDelegate? { get }
 }
 
 extension BroadcastDevice {
@@ -90,8 +84,7 @@ extension BroadcastDevice {
 						return
 					 }
 
-					let optionalMessage: Message? = withUnsafePointer(to: sockaddr_in()) { receiverAddressPtr in
-
+					withUnsafePointer(to: sockaddr_in()) { receiverAddressPtr in
 						let stringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 						let stringBufferRawPointer = UnsafeMutableRawPointer(stringBuffer.baseAddress)
 
@@ -107,19 +100,15 @@ extension BroadcastDevice {
 							returnBytes > 0
 						else {
 							print("Nothing to read from the buffer")
-							return nil
+							return
 						}
 
 						let text = String(cString: UnsafePointer(baseAddress))
-						return Message(text: text, senderIP: senderIP)
-					 }
-
-					DispatchQueue.main.async { [weak self] in
-						guard let _self = self else { return }
-						if let message = optionalMessage {
-							_self.broadcastMessagesDelegate?.deviceDidReceiveMessage(message: message)
+						DispatchQueue.main.async { [weak self] in
+							guard let _self = self else { return }
+							_self.communicationDelegate?.deviceDidReceiveBroadcastMessage(text, from: senderIP)
 						}
-					}
+					 }
 				} else {
 					break
 				}
@@ -156,7 +145,9 @@ extension BroadcastDevice {
 
 
 	func findServer() {
-		Constant.serverDiscovery.withCString { cString in
+		let serverDiscoveryString = communicationDelegate?.discoveryServerString
+		
+		serverDiscoveryString?.withCString { cString in
 			let broadcastMessageLength = Int(strlen(cString))
 			let socket_address_broadcast = generateBroadcastSockAddrIn(source_address: broadcastIP)
 

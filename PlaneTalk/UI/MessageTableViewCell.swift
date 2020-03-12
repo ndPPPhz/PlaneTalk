@@ -9,8 +9,12 @@
 import UIKit
 
 final class MessageTableViewCell: UITableViewCell, NibLoadable {
-	private enum Constant {
+	enum Constant {
 		static let labelMargin: CGFloat = 24
+		static let outgoingMessageBubbleColor = UIColor(red: 70/255, green: 181/255, blue: 85/255, alpha: 1)
+		static let incomingMessageBubbleColor = UIColor(white: 0.972, alpha: 1)
+		static let outgoingMessageTextColor = UIColor.white
+		static let incomingMessageTextColor = UIColor.black
 	}
 
 	@IBOutlet private var messageLabel: UILabel!
@@ -20,8 +24,6 @@ final class MessageTableViewCell: UITableViewCell, NibLoadable {
 	@IBOutlet private var messageLabelTrailingConstraint: NSLayoutConstraint!
 
 	private let messageBubbleView = UIView()
-
-	private var isMine: Bool = false
 
 	override func awakeFromNib() {
 		super.awakeFromNib()

@@ -12,8 +12,7 @@ let udpPort: UInt16 = 9010
 let tcpPort: UInt16 = 8010
 
 enum Constant {
-	static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
-	static let serverResponse = "CHAT-SERVER-RESPONSE-"
+
 	static let nicknameRegex = "^/name: ([0-z]{4,})$"
 	
 	enum Message {
