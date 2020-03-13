@@ -41,6 +41,8 @@ final class TextBoardView: UIView, NibLoadable {
 	
 	func clearTextfield() {
 		textView.text = ""
+		sendButton.isEnabled = false
+		sendButton.backgroundColor = Constant.disabledButtonColor
 	}
 
 	@IBAction func didTapSendButton(_ sender: Any) {

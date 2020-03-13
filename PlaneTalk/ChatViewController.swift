@@ -13,7 +13,7 @@ protocol MessagePresenter: AnyObject {
 }
 
 final class ChatViewController: UIViewController {
-	enum Constant {
+	private enum Constant {
 		static let navigatioBarBackgroundColor = UIColor(white: 0.96, alpha: 1)
 		static let keyboardGap: CGFloat = 38
 		static let viewBackgroundColor = UIColor(red: 246/255, green: 245/255, blue: 246/255, alpha: 1)
@@ -31,12 +31,7 @@ final class ChatViewController: UIViewController {
 	private var textBoardView = TextBoardView.instantiateFromNib()
 	private var manager: Manager?
 
-	private var messages: [ChatMessage] = [
-		ChatMessage(text: "Hello guys", sender: "We", isMe: false),
-		ChatMessage(text: "What are you doing", sender: "We", isMe: true),
-		ChatMessage(text: "I'm wasting my time here at home watching tv series and nothing else. I would like to hang out with some friends to be honest", sender: "We", isMe: false),
-		ChatMessage(text: "Hello guys", sender: "We", isMe: true),
-	] {
+	private var messages: [ChatMessage] = [] {
 		didSet {
 			tableView.reloadData()
 		}
@@ -44,32 +39,19 @@ final class ChatViewController: UIViewController {
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
-
 		registerForKeyboard()
 		addGestureRecognizer()
 		setupUI()
 
-		navigationController?.navigationBar.backgroundColor = Constant.navigatioBarBackgroundColor
-		let availableInterfaces = retrieveNetworkInformation()
-		connectToInterface(availableInterfaces)
-	}
-
-	private func retrieveNetworkInformation() ->  [Interface] {
-		let availableInterfaces = InterfaceFinder.getAvailableInterfaces()
-		return availableInterfaces
-	}
-
-	private func connectToInterface(_ interfaces: [Interface]) {
-		let connector = Connector(availableInterfaces: interfaces)
-		guard let connectedInterface = connector.connect() else {
-			print("Error: interface not found")
+		guard let connectedInterface = Connector.connect() else {
+			assertionFailure("Error: interface not found")
 			return
 		}
-		print("Connected to \(connectedInterface.name)")
 		initialiseDeviceWith(connectedInterface)
 	}
 
 	private func initialiseDeviceWith(_ connectedInterface: Interface) {
+		print("Connected to \(connectedInterface.name)")
 		let currentDevice = Client(
 			ip: connectedInterface.ip,
 			broadcastIP: connectedInterface.broadcastIP
@@ -77,9 +59,11 @@ final class ChatViewController: UIViewController {
 
 		self.manager = Manager(currentDevice: currentDevice)
 		manager?.presenter = self
+
 		currentDevice.communicationDelegate = manager
 		currentDevice.roleGrantDelegate = manager
-		manager?.start()
+
+		manager?.allowClientToUDPCommunication()
 	}
 
 	// MARK: - Utilities
@@ -96,20 +80,19 @@ final class ChatViewController: UIViewController {
 		else {
 			return
 		}
-		let constant = PlatformUtils.hasHomeIndicator ? -(endFrame.height - Constant.keyboardGap) : -endFrame.height
-		setBottomConstraint(constant, duration: duration)
+		let constant = PlatformUtils.hasHomeIndicator ? (endFrame.height - Constant.keyboardGap) : endFrame.height
+		setBottomConstraint(value: -constant, duration: duration)
 	}
 
 	@objc private func keyboardWillHide(_ notification: Notification!) {
 		guard let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else {
 			return
 		}
-		setBottomConstraint(0, duration: duration)
+		setBottomConstraint(value: 0, duration: duration)
 	}
 
-	private func setBottomConstraint(_ constant: CGFloat, duration: Double) {
+	private func setBottomConstraint(value constant: CGFloat, duration: Double) {
 		let newBottomConstant = constant
-
 		UIView.animate(withDuration: duration, animations: {
 			self.textBoardViewContainerBottomConstraint.constant = newBottomConstant
 			self.view.layoutIfNeeded()
@@ -128,6 +111,7 @@ final class ChatViewController: UIViewController {
 		tableView.dataSource = self
 
 		view.backgroundColor = Constant.viewBackgroundColor
+		navigationController?.navigationBar.backgroundColor = Constant.navigatioBarBackgroundColor
 	}
 
 	@objc private func didTapOnTableview() {
@@ -155,11 +139,8 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension ChatViewController: MessagePresenter {
 	func show(chatMessage: ChatMessage) {
-		DispatchQueue.main.async { [weak self] in
-		   guard let _self = self else { return }
-			_self.textBoardView.clearTextfield()
-		   _self.messages.append(chatMessage)
-		}
+		textBoardView.clearTextfield()
+		messages.append(chatMessage)
 	}
 }
 
@@ -171,12 +152,16 @@ extension ChatViewController: TextBoardViewDelegate {
 }
 
 extension MessageTableViewCell.ViewData {
-	static func from(_ content: ChatMessage) -> MessageTableViewCell.ViewData {
+	static func from(_ chatMessage: ChatMessage) -> MessageTableViewCell.ViewData {
+		let textColor = chatMessage.isMe ? MessageTableViewCell.Constant.outgoingMessageTextColor : MessageTableViewCell.Constant.incomingMessageTextColor
+		let backgroundColor = chatMessage.isMe ? MessageTableViewCell.Constant.outgoingMessageBubbleColor : MessageTableViewCell.Constant.incomingMessageBubbleColor
+
 		return MessageTableViewCell.ViewData(
-			text: content.text,
-			textColor: content.isMe ? MessageTableViewCell.Constant.outgoingMessageTextColor : MessageTableViewCell.Constant.incomingMessageTextColor,
-			backgroundColor: content.isMe ? MessageTableViewCell.Constant.outgoingMessageBubbleColor : MessageTableViewCell.Constant.incomingMessageBubbleColor,
-			alignment: content.isMe ? .right : .left
+			sender: chatMessage.sender,
+			text: chatMessage.text,
+			textColor: textColor,
+			backgroundColor: backgroundColor,
+			alignment: chatMessage.isMe ? .right : .left
 		)
 	}
 }

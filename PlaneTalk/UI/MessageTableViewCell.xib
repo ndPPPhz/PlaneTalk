@@ -17,16 +17,24 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="78x-m3-6On">
-                        <rect key="frame" x="32" y="32" width="37" height="32"/>
+                        <rect key="frame" x="32" y="46" width="37" height="18"/>
                         <fontDescription key="fontDescription" type="system" weight="light" pointSize="15"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="pyb-UJ-M1s">
+                        <rect key="frame" x="32" y="24" width="28.5" height="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 <constraints>
+                    <constraint firstItem="78x-m3-6On" firstAttribute="top" secondItem="pyb-UJ-M1s" secondAttribute="bottom" constant="8" id="5gE-yF-juF"/>
+                    <constraint firstItem="pyb-UJ-M1s" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="24" id="8v9-Vz-vcB"/>
+                    <constraint firstItem="pyb-UJ-M1s" firstAttribute="leading" secondItem="78x-m3-6On" secondAttribute="leading" id="A5j-2B-g8s"/>
                     <constraint firstAttribute="bottom" secondItem="78x-m3-6On" secondAttribute="bottom" constant="32" id="BoG-S6-yiE"/>
-                    <constraint firstItem="78x-m3-6On" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="32" id="Xdm-27-0xv"/>
                     <constraint firstAttribute="trailing" secondItem="78x-m3-6On" secondAttribute="trailing" constant="32" id="qsl-9d-BWu"/>
                     <constraint firstItem="78x-m3-6On" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="32" id="sbK-3S-wKK"/>
                     <constraint firstItem="78x-m3-6On" firstAttribute="width" relation="lessThanOrEqual" secondItem="H2p-sc-9uM" secondAttribute="width" multiplier="0.76" id="xPh-Uq-G7s"/>
@@ -43,8 +51,9 @@
                 <outlet property="messageLabel" destination="78x-m3-6On" id="F8f-Dd-oxp"/>
                 <outlet property="messageLabelBottomConstraint" destination="BoG-S6-yiE" id="oFz-CL-mMG"/>
                 <outlet property="messageLabelLeadingConstraint" destination="sbK-3S-wKK" id="Dzv-qf-Q76"/>
-                <outlet property="messageLabelTopConstraint" destination="Xdm-27-0xv" id="naV-Iv-s00"/>
                 <outlet property="messageLabelTrailingConstraint" destination="qsl-9d-BWu" id="Mpa-eF-PCk"/>
+                <outlet property="senderLabel" destination="pyb-UJ-M1s" id="XVz-g0-6n6"/>
+                <outlet property="senderLabelTopConstraint" destination="8v9-Vz-vcB" id="M5v-El-Hkv"/>
             </connections>
             <point key="canvasLocation" x="-439.13043478260875" y="1.3392857142857142"/>
         </tableViewCell>

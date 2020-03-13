@@ -71,44 +71,46 @@ extension BroadcastDevice {
 
 		DispatchQueue.global(qos: .userInteractive).async { [weak self] in
 			guard let _self = self else { return }
-            var event = kevent()
+			var events: [kevent] = Array<kevent>(repeating: kevent(), count: 5)
             while true {
 				// kevent is blocking. The thread will be blocked here until an event occurs
-				let status = kevent(_self.broadcastKQueue, nil, 0, &event, 1, nil)
+				let status = kevent(_self.broadcastKQueue, nil, 0, &events, 1, nil)
 				// When an event occurs
 				if  status == 0 {
 					 print("Timeout")
 				 } else if status > 0 {
-					 if (event.flags & UInt16(EV_EOF)) == EV_EOF {
-						print("The socket (\(_self.udp_reception_message_socket)) has been closed.")
-						return
-					 }
-
-					withUnsafePointer(to: sockaddr_in()) { receiverAddressPtr in
-						let stringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
-						let stringBufferRawPointer = UnsafeMutableRawPointer(stringBuffer.baseAddress)
-
-						let rawReceiverAddressPtr = UnsafeRawPointer(receiverAddressPtr).bindMemory(to: sockaddr.self, capacity: 1)
-						let sockAddressPtr: UnsafeMutablePointer<sockaddr> = UnsafeMutablePointer(mutating: rawReceiverAddressPtr)
-						var sockBindingAddressSize = UInt32(MemoryLayout<sockaddr_in>.stride)
-						let returnBytes = recvfrom(_self.udp_reception_message_socket, stringBufferRawPointer, 65536, 0, sockAddressPtr, &sockBindingAddressSize)
-
-						let senderIP = ipAddress(from: receiverAddressPtr.pointee)
-
-						guard
-							let baseAddress = stringBuffer.baseAddress,
-							returnBytes > 0
-						else {
-							print("Nothing to read from the buffer")
+					for i in 0..<status {
+						if (events[Int(i)].flags & UInt16(EV_EOF)) == EV_EOF {
+							print("The socket (\(_self.udp_reception_message_socket)) has been closed.")
 							return
 						}
 
-						let text = String(cString: UnsafePointer(baseAddress))
-						DispatchQueue.main.async { [weak self] in
-							guard let _self = self else { return }
-							_self.communicationDelegate?.deviceDidReceiveBroadcastMessage(text, from: senderIP)
+						withUnsafePointer(to: sockaddr_in()) { receiverAddressPtr in
+							let stringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
+							let stringBufferRawPointer = UnsafeMutableRawPointer(stringBuffer.baseAddress)
+
+							let rawReceiverAddressPtr = UnsafeRawPointer(receiverAddressPtr).bindMemory(to: sockaddr.self, capacity: 1)
+							let sockAddressPtr: UnsafeMutablePointer<sockaddr> = UnsafeMutablePointer(mutating: rawReceiverAddressPtr)
+							var sockBindingAddressSize = UInt32(MemoryLayout<sockaddr_in>.stride)
+							let returnBytes = recvfrom(_self.udp_reception_message_socket, stringBufferRawPointer, 65536, 0, sockAddressPtr, &sockBindingAddressSize)
+
+							let senderIP = ipAddress(from: receiverAddressPtr.pointee)
+
+							guard
+								let baseAddress = stringBuffer.baseAddress,
+								returnBytes > 0
+							else {
+								print("Nothing to read from the buffer")
+								return
+							}
+
+							let text = String(cString: UnsafePointer(baseAddress))
+							DispatchQueue.main.async { [weak self] in
+								guard let _self = self else { return }
+								_self.communicationDelegate?.deviceDidReceiveBroadcastMessage(text, from: senderIP)
+							}
 						}
-					 }
+					}
 				} else {
 					break
 				}

@@ -6,16 +6,21 @@
 //  Copyright © 2020 Annino De Petra. All rights reserved.
 //
 
-import Foundation
+protocol ConnectorInterface {
+	static func connect() -> Interface?
+}
 
-final class Connector {
-	private let availableInterfaces: [Interface]
-
-	init(availableInterfaces: [Interface]) {
-		self.availableInterfaces = availableInterfaces
+final class Connector: ConnectorInterface {
+	static func connect() -> Interface? {
+		let availableInterfaces = retrieveNetworkInformation()
+		return connectToInterface(availableInterfaces)
 	}
 
-	func connect() -> Interface? {
+	private static func retrieveNetworkInformation() ->  [Interface] {
+		return InterfaceFinder.getAvailableInterfaces()
+	}
+
+	private static func connectToInterface(_ availableInterfaces: [Interface]) -> Interface? {
 		let hotspotCondition: (Interface) -> Bool = { interface in
 			return interface.name.contains(Constant.Interface.hotspot)
 		}

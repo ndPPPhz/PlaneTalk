@@ -55,6 +55,17 @@ final class Server: BroadcastDevice {
 			exit(-1);
 		}
 
+		let enable = 1;
+
+		let optionReturn = withUnsafePointer(to: enable) { enablePrt in
+			return setsockopt(incoming_tcp_connections_socket, SOL_SOCKET, SO_REUSEADDR, enablePrt, UInt32(MemoryLayout<Int>.size))
+		}
+
+		if optionReturn == -1 {
+			print("Error while enable the transmission to broadcast")
+			exit(-1)
+		}
+
 		let incoming_client_tcp_sock_addr = generateReceiverSockAddrInTemplate(port: tcpPort)
 
 		// Binding
@@ -110,6 +121,7 @@ final class Server: BroadcastDevice {
 			var events: [kevent] = Array<kevent>(repeating: kevent(), count: 5)
             while true {
 				let status = kevent(_self.tcpKQueue, nil, 0, &events, 1, nil)
+				print("")
 				_self.receivedTCPConnectionStatus(status, socketKQueue: _self.tcpKQueue, events: events)
             }
         }

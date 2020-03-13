@@ -71,7 +71,7 @@ final class Manager: ServerIPProvider {
 		}
 	}
 
-	func start() {
+	func allowClientToUDPCommunication() {
 		// Open a socket, create a queue for handling the oncoming events, enable transmission of broadcast messages and find a server
 		currentDevice.bindForUDPMessages()
 		currentDevice.createBroadcastKqueue()
@@ -145,24 +145,25 @@ extension Manager: CommunicationDelegate {
 	}
 
 	func serverDidSendText(_ text: String) {
-		let chatMessage = ChatMessage(text: text, sender: currentDevice.ip, isMe: true)
-		presenter?.show(chatMessage: chatMessage)
+		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
+		presentMessage(chatMessage: chatMessage)
 	}
 
 	func serverDidSendClientText(_ text: String, clientIP: String) {
 		let chatMessage = ChatMessage(text: text, sender: clientIP, isMe: false)
-		presenter?.show(chatMessage: chatMessage)
+		presentMessage(chatMessage: chatMessage)
 	}
 
 	func serverDidSendInformationText(_ text: String) {
 		let chatMessage = ChatMessage(text: text, sender: "Information", isMe: false)
-		presenter?.show(chatMessage: chatMessage)
+		presentMessage(chatMessage: chatMessage)
 	}
 
 	// Client
 	func deviceDidReceiveTCPText(_ text: String) {
-		let chatMessage = ChatMessage(text: text, sender: "Someone", isMe: false)
-		presenter?.show(chatMessage: chatMessage)
+		let message = messageFactory.getTextAndServer(from: text)
+		let chatMessage = ChatMessage(text: message.text, sender: message.senderIP, isMe: false)
+		presentMessage(chatMessage: chatMessage)
 	}
 
 	var discoveryServerString: String {
@@ -170,11 +171,16 @@ extension Manager: CommunicationDelegate {
 	}
 
 	func deviceDidSendText(_ text: String) {
-		let chatMessage = ChatMessage(text: text, sender: currentDevice.ip, isMe: true)
-		presenter?.show(chatMessage: chatMessage)
+		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
+		presentMessage(chatMessage: chatMessage)
 	}
 
-
+	func presentMessage(chatMessage: ChatMessage) {
+		DispatchQueue.main.async { [weak self] in
+			guard let _self = self else { return }
+			_self.presenter?.show(chatMessage: chatMessage)
+		}
+	}
 }
 
 extension Manager: ManagerDelegate {

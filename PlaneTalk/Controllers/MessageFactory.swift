@@ -38,6 +38,15 @@ class MessageFactory {
 		return Message(text: text, senderIP: senderIP)
 	}
 
+	func getTextAndServer(from text: String) -> Message {
+		let splitted = text.components(separatedBy: Constant.separator)
+		guard splitted.count > 1 else {
+			return Message(text: text, senderIP: "!!")
+		}
+		
+		return Message(text: splitted[0], senderIP: splitted[1])
+	}
+
 	var serverBroadcastAuthenticationResponse: String {
 		return Constant.serverResponse + device.ip
 	}
