@@ -22,7 +22,7 @@ protocol BroadcastDevice: NetworkDevice {
 	var udpCommunicationDelegate: UDPCommunicationDelegate? { get }
 
 	func enableReceptionAndTransmissionUDPMessages()
-	func clearKqueueEvents()
+	func closeUDPSockets()
 
 	func findServer()
 
@@ -205,7 +205,7 @@ extension BroadcastDevice {
 		}
 	}
 
-	func clearKqueueEvents() {
+	func closeUDPSockets() {
 		var sockKevent = kevent(
 			ident: UInt(udp_reception_message_socket),
 			filter: Int16(EVFILT_READ),
@@ -220,5 +220,7 @@ extension BroadcastDevice {
 		}
 		// Even if there is no connection in UDP, close will free the fd from the kernel
 		close(udpEventsKQueue)
+		close(udp_broadcast_message_socket)
+		close(udp_reception_message_socket)
 	}
 }

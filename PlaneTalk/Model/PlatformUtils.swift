@@ -15,8 +15,7 @@ public protocol PlatformUtilsProtocol {
 }
 
 public class PlatformUtils: PlatformUtilsProtocol {
-	public init() {
-	}
+	public init() {}
 
 	enum Constant {
 		/// The height of the iPhone X and iPhone XS and iPhone 11 Pro in pixels.
