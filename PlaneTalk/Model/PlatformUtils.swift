@@ -15,8 +15,7 @@ public protocol PlatformUtilsProtocol {
 }
 
 public class PlatformUtils: PlatformUtilsProtocol {
-	public init() {
-	}
+	public init() {}
 
 	enum Constant {
 		/// The height of the iPhone X and iPhone XS and iPhone 11 Pro in pixels.
@@ -63,7 +62,6 @@ public class PlatformUtils: PlatformUtilsProtocol {
 		return isCurrentHeight(containedIn: Constant.heightsAndWidthsOfiPadsWithHomeIndicators)
 	}()
 
-	// TODO: [ISAV-15486] Refactor to make naming more intentional
 	public static var isiPhoneX: Bool = {
 		return isCurrentHeight(containedIn: Constant.heightsOfiPhonesWithHomeIndicators)
 	}()

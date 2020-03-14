@@ -29,7 +29,7 @@ final class ChatViewController: UIViewController {
 	}
 
 	private var textBoardView = TextBoardView.instantiateFromNib()
-	private var manager: Manager?
+	private var manager: ManagerInterface?
 
 	private var messages: [ChatMessage] = [] {
 		didSet {
@@ -42,28 +42,32 @@ final class ChatViewController: UIViewController {
 		registerForKeyboard()
 		addGestureRecognizer()
 		setupUI()
+		start()
+	}
 
+	private func start() {
+		// Find the connected interface
 		guard let connectedInterface = Connector.connect() else {
 			assertionFailure("Error: interface not found")
 			return
 		}
-		initialiseDeviceWith(connectedInterface)
-	}
 
-	private func initialiseDeviceWith(_ connectedInterface: Interface) {
 		print("Connected to \(connectedInterface.name)")
+		// Create a device object
 		let currentDevice = Device(
 			ip: connectedInterface.ip,
 			broadcastIP: connectedInterface.broadcastIP
 		)
 
-		self.manager = Manager(broadcastDevice: currentDevice)
-		manager?.presenter = self
+		// Initialise the manager with the currentDevice
+		let manager = Manager(device: currentDevice)
+		manager.presenter = self
 
 		currentDevice.udpCommunicationDelegate = manager
 		currentDevice.roleGrantDelegate = manager
 
-		manager?.allowBroadcastDeviceTransmissionReceptionUDPMessages()
+		manager.allowBroadcastDeviceTransmissionReceptionUDPMessages()
+		self.manager = manager
 	}
 
 	// MARK: - Utilities

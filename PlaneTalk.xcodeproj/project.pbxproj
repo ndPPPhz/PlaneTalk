@@ -12,6 +12,7 @@
 		EF3D9D9F241D163C009079FC /* UDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D9E241D163C009079FC /* UDP.swift */; };
 		EF3D9DA1241D1650009079FC /* ServerTransmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA0241D1650009079FC /* ServerTransmission.swift */; };
 		EF3D9DA3241D1682009079FC /* ClientTransmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA2241D1682009079FC /* ClientTransmission.swift */; };
+		EF3D9DA7241D6427009079FC /* SocketUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA6241D6427009079FC /* SocketUtilities.swift */; };
 		EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585323FEDB4B001020FD /* InterfaceFinder.swift */; };
 		EF50585623FEDC84001020FD /* Interface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585523FEDC84001020FD /* Interface.swift */; };
 		EF50585823FEDEF4001020FD /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585723FEDEF4001020FD /* Server.swift */; };
@@ -31,7 +32,7 @@
 		EF8CBE62241ABDCD009AB2D0 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */; };
 		EF8CBE64241AC1E3009AB2D0 /* MessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */; };
 		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
-		EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Extensions.swift */; };
+		EF95F80C2402D5D20002C047 /* Notification+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Notification+Ext.swift */; };
 		EF95F8102402E35C0002C047 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80F2402E35C0002C047 /* User.swift */; };
 		EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F82E240309370002C047 /* MessageTableViewCell.swift */; };
 		EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF95F82F240309370002C047 /* MessageTableViewCell.xib */; };
@@ -49,6 +50,7 @@
 		EF3D9D9E241D163C009079FC /* UDP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDP.swift; sourceTree = "<group>"; };
 		EF3D9DA0241D1650009079FC /* ServerTransmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTransmission.swift; sourceTree = "<group>"; };
 		EF3D9DA2241D1682009079FC /* ClientTransmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTransmission.swift; sourceTree = "<group>"; };
+		EF3D9DA6241D6427009079FC /* SocketUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketUtilities.swift; sourceTree = "<group>"; };
 		EF50585323FEDB4B001020FD /* InterfaceFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceFinder.swift; sourceTree = "<group>"; };
 		EF50585523FEDC84001020FD /* Interface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interface.swift; sourceTree = "<group>"; };
 		EF50585723FEDEF4001020FD /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
@@ -70,7 +72,7 @@
 		EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFactory.swift; sourceTree = "<group>"; };
 		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
-		EF95F80B2402D5D20002C047 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
+		EF95F80B2402D5D20002C047 /* Notification+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Ext.swift"; sourceTree = "<group>"; };
 		EF95F80F2402E35C0002C047 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		EF95F82E240309370002C047 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		EF95F82F240309370002C047 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
@@ -119,6 +121,36 @@
 			path = TCP;
 			sourceTree = "<group>";
 		};
+		EF3D9DA4241D63AF009079FC /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */,
+				EF9C42E6241A899C00564AC2 /* Collection+Ext.swift */,
+				EF9C42E8241A89B200564AC2 /* UIView+Ext.swift */,
+				EF95F80B2402D5D20002C047 /* Notification+Ext.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		EF3D9DA5241D63D8009079FC /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */,
+				EF9C42E4241A889000564AC2 /* NibLoadable.swift */,
+				EF8CBE5D241AB547009AB2D0 /* Reusable.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		EF3D9DA8241D6443009079FC /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EF3D9DA6241D6427009079FC /* SocketUtilities.swift */,
+				EF5058602400A5A1001020FD /* Utilities.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		EF50585F23FF0BEB001020FD /* Devices */ = {
 			isa = PBXGroup;
 			children = (
@@ -164,15 +196,9 @@
 		EF95F80D2402D65D0002C047 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */,
-				EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */,
-				EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */,
-				EF9C42E4241A889000564AC2 /* NibLoadable.swift */,
-				EF9C42E6241A899C00564AC2 /* Collection+Ext.swift */,
-				EF9C42E8241A89B200564AC2 /* UIView+Ext.swift */,
-				EF8CBE5D241AB547009AB2D0 /* Reusable.swift */,
-				EF5058602400A5A1001020FD /* Utilities.swift */,
-				EF95F80B2402D5D20002C047 /* Extensions.swift */,
+				EF3D9DA5241D63D8009079FC /* Protocols */,
+				EF3D9DA4241D63AF009079FC /* Extensions */,
+				EF3D9DA8241D6443009079FC /* Utilities */,
 				EF884EC623F76403002CB0EE /* Main.storyboard */,
 				EF884ECB23F76408002CB0EE /* LaunchScreen.storyboard */,
 				EF884EC923F76408002CB0EE /* Assets.xcassets */,
@@ -200,6 +226,7 @@
 				EF95F80F2402E35C0002C047 /* User.swift */,
 				EF50585523FEDC84001020FD /* Interface.swift */,
 				EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */,
+				EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -310,7 +337,8 @@
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
 				EF8CBE5C241AB343009AB2D0 /* PlatformUtils.swift in Sources */,
 				EF9C42DB241A564F00564AC2 /* ViewDataConfigurable.swift in Sources */,
-				EF95F80C2402D5D20002C047 /* Extensions.swift in Sources */,
+				EF95F80C2402D5D20002C047 /* Notification+Ext.swift in Sources */,
+				EF3D9DA7241D6427009079FC /* SocketUtilities.swift in Sources */,
 				EF50585C23FEF5C3001020FD /* Manager.swift in Sources */,
 				EF50585823FEDEF4001020FD /* Server.swift in Sources */,
 				EF9C42E7241A899C00564AC2 /* Collection+Ext.swift in Sources */,

@@ -1,8 +1,8 @@
 //
-//  Utilities.swift
-//  SendiOS
+//  SocketUtilities.swift
+//  PlaneTalk
 //
-//  Created by Annino De Petra on 21/02/2020.
+//  Created by Annino De Petra on 14/03/2020.
 //  Copyright © 2020 Annino De Petra. All rights reserved.
 //
 
@@ -10,18 +10,6 @@ import Foundation
 
 let udpPort: UInt16 = 9010
 let tcpPort: UInt16 = 8010
-
-enum Constant {	
-	enum Message {
-		static let searchingServer = "Searching a server nearby"
-		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"
-	}
-
-	enum Interface {
-		static let hotspot = "bridge"
-		static let wlan = "en0"
-	}
-}
 
 func htons(value: CUnsignedShort) -> CUnsignedShort {
     return (value << 8) + (value >> 8)

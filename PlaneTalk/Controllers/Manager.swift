@@ -8,10 +8,6 @@
 
 import Foundation
 
-protocol ServerIPProvider: AnyObject {
-	var serverIP: String? { get }
-}
-
 protocol GrantRoleDelegate: AnyObject {
 	func deviceAsksServerPermissions(_ device: NetworkDevice)
 }
@@ -22,7 +18,12 @@ enum DeviceType {
 	case server(Server)
 }
 
-final class Manager: ServerIPProvider {
+protocol ManagerInterface {
+	func allowBroadcastDeviceTransmissionReceptionUDPMessages()
+	func send(_ message: String)
+}
+
+final class Manager: ManagerInterface {
 	// The instance of the current device
 	private var currentDevice: DeviceType
 
@@ -58,23 +59,23 @@ final class Manager: ServerIPProvider {
 		return server
 	}
 
-	var serverIP: String?
+	private var serverIP: String?
 
-	var isServer: Bool {
+	private var isServer: Bool {
 		return server != nil
 	}
 
-	var isThereServer: Bool {
+	private var isThereServer: Bool {
 		return serverIP != nil
 	}
 
-	var presenter: MessagePresenter?
+	weak var presenter: MessagePresenter?
 
 	private let messageFactory: MessageFactory
 
-	init(broadcastDevice: BroadcastDevice) {
-		self.currentDevice = .broadcastDevice(broadcastDevice)
-		self.messageFactory = MessageFactory(device: broadcastDevice)
+	init(device: BroadcastDevice) {
+		self.currentDevice = .broadcastDevice(device)
+		self.messageFactory = MessageFactory(device: device)
 	}
 
 	func allowBroadcastDeviceTransmissionReceptionUDPMessages() {
@@ -142,21 +143,17 @@ extension Manager: UDPCommunicationDelegate {
 	private func clientHasReceivedBroadcastMessage(_ message: Message) {
 		switch message.text {
 		// If it's the server response to the discovery message
-		case let string where string.contains(messageFactory.serverBroadcastAuthenticationResponseTemplate):
-			guard !isThereServer else {
-				assertionFailure("A server is already available @ \(serverIP!)")
-				return
-			}
-
+		case let string where string.contains(messageFactory.serverBroadcastAuthenticationResponseTemplate) && !isThereServer:
 			// Save the server IP
-			let serverIP = message.senderIP
-			self.serverIP = serverIP
+			self.serverIP = message.senderIP
 			print("Found out a server @ " + message.senderIP)
-			broadcastDevice?.clearKqueueEvents()
+
+			//
+			broadcastDevice?.closeUDPSockets()
 
 			let client = Client(
 				ip: currentDeviceIP,
-				serverIP: serverIP
+				serverIP: message.senderIP
 			)
 
 			currentDevice = .client(client)
@@ -239,8 +236,8 @@ extension Manager: GrantRoleDelegate {
 		)
 
 		currentDevice = .server(server)
+		server.udpCommunicationDelegate = self
 		server.serverTCPCommunicationDelegate = self
-		server.udpCommunicationDelegate = device.udpCommunicationDelegate
 
 		// Create a TCP socket to accept clients requests
 		server.enableTCPCommunication()
