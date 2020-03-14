@@ -8,34 +8,53 @@
 
 import Foundation
 
-final class Server: BroadcastDevice {
+protocol ServerInterface: BroadcastDevice {
+	// Incoming TCP connections socket
+	var incoming_tcp_connections_socket: Int32 { get }
+	var tcpKQueue: Int32 { get }
+	var connectionSockets: [Int32: User]  { get }
+	var maxListeningConnections: Int32 { get }
+	var serverTCPCommunicationDelegate: ServerTCPCommunicationDelegate? { get }
+
+	func enableTCPCommunication()
+	func handleNewConnection()
+	func receivedClientTCPText(_ text: String, socket: Int32, user: User)
+	func sendClientText(fullText: String, content: String, user: User, socket: Int32)
+	func sendServerText(_ text: String)
+	func sendInformationText(_ text: String)
+}
+
+final class Server: ServerInterface {
+	// MARK: - BroadcastDevice
+	var broadcastIP: String
+
 	// Server udp broadcast socket
 	let udp_broadcast_message_socket: Int32
 	// Server udp reception socket
 	let udp_reception_message_socket: Int32
 
-	// Incoming TCP connections socket
-	private var incoming_tcp_connections_socket: Int32 = -1
-
 	// Kqueue to organise broadcast events
-	lazy var broadcastKQueue: Int32 = kqueue()
+	lazy var udpEventsKQueue: Int32 = kqueue()
+	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
+	weak var roleGrantDelegate: GrantRoleDelegate? // to be removed
+
+
+	// Incoming TCP connections socket
+	var incoming_tcp_connections_socket: Int32 = -1
 	// Kqueue to organise tcp events
-	private let tcpKQueue: Int32 = kqueue()
+	let tcpKQueue: Int32 = kqueue()
 
 	// Map of the fd and their IPs
-	private var connectionSockets: [Int32: User] = [:]
+	var connectionSockets: [Int32: User] = [:]
 	// Array of all the kevents
 	private var kEvents: [kevent] = []
 
 	let maxListeningConnections: Int32 = 5
 
-	weak var roleGrantDelegate: GrantRoleDelegate?
 	weak var serverTCPCommunicationDelegate: ServerTCPCommunicationDelegate?
-	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
-	
+
 	private var nickname: String?
 	var ip: String
-	var broadcastIP: String
 
 	init(
 		ip: String,
@@ -49,7 +68,7 @@ final class Server: BroadcastDevice {
 		self.udp_reception_message_socket = udp_reception_message_socket
 	}
 
-	func createTCPSocket() {
+	func enableTCPCommunication() {
 		incoming_tcp_connections_socket = socket(AF_INET, SOCK_STREAM, 0)
 		if (incoming_tcp_connections_socket == -1) {
 			print("socket creation failed...\n");
@@ -170,7 +189,7 @@ final class Server: BroadcastDevice {
 	}
 
 	// A new connection is about to come
-	private func handleNewConnection() {
+	func handleNewConnection() {
 		let client_address = sockaddr_in()
 		let connection_socket_and_client_ip: (fd: Int32, IP: String) = withUnsafePointer(to: client_address) { client_address_ptr -> (Int32, String) in
 			let raw_client_address_ptr = UnsafeRawPointer(client_address_ptr).bindMemory(to: sockaddr.self, capacity: 1)
@@ -220,12 +239,12 @@ final class Server: BroadcastDevice {
 		}
 		let string = String(cString: UnsafePointer(baseAddress))
 		// Handle the message in order to understand whether is a standard message or a nick change request
-		sendClientTCPText(string, socket: socket, user: user)
+		receivedClientTCPText(string, socket: socket, user: user)
 	}
 
 	// MARK: - Send message
 	// Send the message of the client whose socket is clientSocket to all of the other clients
-	private func sendClientTCPText(_ text: String, socket: Int32, user: User) {
+	 func receivedClientTCPText(_ text: String, socket: Int32, user: User) {
 		guard let messageType = serverTCPCommunicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: user.IP) else {
 			print("Nil communicationDelegate")
 			return
@@ -236,20 +255,24 @@ final class Server: BroadcastDevice {
 			connectionSockets[socket]?.changeNickname(nickname)
 			sendInformationText("\(user.IP) is now \(nickname)")
 		case .text(let fullText, let content, let senderAlias):
-			for event in kEvents where event.ident != UInt(socket) {
-				let fd = event.ident
-				fullText.withCString { cString in
-					let messageLength = Int(strlen(cString))
-					let bytes = send(Int32(fd), cString, messageLength, 0)
-					if bytes < 0 {
-						print("Error sending TCP Message")
-					} else {
-						print("Propagated by the server to socket \(socket)")
-					}
+			sendClientText(fullText: fullText, content: content, user: user, socket: socket)
+		}
+	}
+
+	func sendClientText(fullText: String, content: String, user: User, socket: Int32) {
+		for event in kEvents where event.ident != UInt(socket) {
+			let fd = event.ident
+			fullText.withCString { cString in
+				let messageLength = Int(strlen(cString))
+				let bytes = send(Int32(fd), cString, messageLength, 0)
+				if bytes < 0 {
+					print("Error sending TCP Message")
+				} else {
+					print("Propagated by the server to socket \(socket)")
 				}
 			}
-			serverTCPCommunicationDelegate?.serverDidSendClientText(content, clientIP: user.IP)
 		}
+		serverTCPCommunicationDelegate?.serverDidSendClientText(content, clientIP: user.IP)
 	}
 
 	// Send server own text

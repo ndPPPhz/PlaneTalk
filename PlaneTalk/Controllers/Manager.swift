@@ -12,76 +12,87 @@ protocol ServerIPProvider: AnyObject {
 	var serverIP: String? { get }
 }
 
-protocol UDPCommunicationDelegate: AnyObject {
-	var discoveryServerString: String { get }
-	func deviceDidReceiveBroadcastMessage(_ text: String, from sender: String)
-}
-
-protocol ServerTCPCommunicationDelegate: UDPCommunicationDelegate {
-	func serverWantsToSendTCPText(_ text: String) -> MessageType
-	func serverDidReceiveClientTCPText(_ text: String, senderIP: String) -> MessageType
-
-	func serverDidSendText(_ text: String)
-	func serverDidSendClientText(_ text: String, clientIP: String)
-	func serverDidSendInformationText(_ text: String)
-}
-
-protocol ClientTCPCommunicationDelegate: UDPCommunicationDelegate {
-	func clientDidReceiveTCPText(_ text: String)
-	func clientDidSendText(_ text: String)
-}
-
-
 protocol GrantRoleDelegate: AnyObject {
-	func deviceAsksServerPermissions(_ device: Device)
+	func deviceAsksServerPermissions(_ device: NetworkDevice)
+}
+
+enum DeviceType {
+	case broadcastDevice(BroadcastDevice)
+	case client(Client)
+	case server(Server)
 }
 
 final class Manager: ServerIPProvider {
-
 	// The instance of the current device
-	private var currentDevice: BroadcastDevice
-	// If the current device is also the server, then this var wont be nil
-	private var server: Server?
-	// The serverIP as it's ServerIPProvider
-	var serverIP: String?
+	private var currentDevice: DeviceType
 
-	private let messageFactory: MessageFactory
-
-	init(currentDevice: BroadcastDevice) {
-		self.currentDevice = currentDevice
-		self.messageFactory = MessageFactory(device: currentDevice)
+	private var currentDeviceIP: String {
+		switch currentDevice {
+		case .client(let client):
+			return client.ip
+		case .server(let server):
+			return server.ip
+		case .broadcastDevice(let broadcastDevice):
+			return broadcastDevice.ip
+		}
 	}
 
-	var presenter: MessagePresenter?
+	private var broadcastDevice: BroadcastDevice? {
+		guard case .broadcastDevice(let device) = currentDevice else {
+			return nil
+		}
+		return device
+	}
+
+	private var client: Client? {
+		guard case .client(let client) = currentDevice else {
+			return nil
+		}
+		return client
+	}
+
+	private var server: Server? {
+		guard case .server(let server) = currentDevice else {
+			return nil
+		}
+		return server
+	}
+
+	var serverIP: String?
 
 	var isServer: Bool {
-		return currentDevice.ip == serverIP
+		return server != nil
 	}
 
 	var isThereServer: Bool {
 		return serverIP != nil
 	}
 
-	func send(_ message: String) {
-		if
-			!isServer,
-			let client = currentDevice as? Client
-		{
-			client.sendToServerTCP(message)
-		} else if
-			let server = server,
-			isServer
-		{
-			server.sendServerText(message)
-		}
+	var presenter: MessagePresenter?
+
+	private let messageFactory: MessageFactory
+
+	init(broadcastDevice: BroadcastDevice) {
+		self.currentDevice = .broadcastDevice(broadcastDevice)
+		self.messageFactory = MessageFactory(device: broadcastDevice)
 	}
 
-	func allowClientToUDPCommunication() {
+	func allowBroadcastDeviceTransmissionReceptionUDPMessages() {
 		// Open a socket, create a queue for handling the oncoming events, enable transmission of broadcast messages and find a server
-		currentDevice.bindForUDPMessages()
-		currentDevice.createBroadcastKqueue()
-		currentDevice.enableTransmissionToBroadcast()
-		currentDevice.findServer()
+		broadcastDevice?.enableReceptionAndTransmissionUDPMessages()
+		// Find a server
+		broadcastDevice?.findServer()
+	}
+
+	func send(_ message: String) {
+		switch currentDevice {
+		case .client(let client):
+			client.sendToServerTCP(message)
+		case .server(let server):
+			server.sendServerText(message)
+		case .broadcastDevice(_):
+			break
+		}
 	}
 
 	private func presentMessage(chatMessage: ChatMessage) {
@@ -103,7 +114,7 @@ extension Manager: UDPCommunicationDelegate {
 		// Generate Message
 		let message = messageFactory.receivedUDPMessage(text, from: sender)
 		// Since it's broadcast, you can receive your message back then skip it
-		guard message.senderIP != currentDevice.ip else { return }
+		guard message.senderIP != currentDeviceIP else { return }
 
 		if isServer {
 			serverHasReceivedBroadcastMessage(message)
@@ -119,7 +130,7 @@ extension Manager: UDPCommunicationDelegate {
 		case messageFactory.discoveryMessage:
 			// The server will reply sending back its IP
 			let serverResponse = messageFactory.serverBroadcastAuthenticationResponse
-			currentDevice.sendBroadcastMessage(serverResponse)
+			server?.sendBroadcastMessage(serverResponse)
 			print("New client " + message.senderIP)
 		default:
 			assertionFailure("Server has received an unknown message \(message.text)")
@@ -141,12 +152,18 @@ extension Manager: UDPCommunicationDelegate {
 			let serverIP = message.senderIP
 			self.serverIP = serverIP
 			print("Found out a server @ " + message.senderIP)
+			broadcastDevice?.clearKqueueEvents()
+
+			let client = Client(
+				ip: currentDeviceIP,
+				serverIP: serverIP
+			)
+
+			currentDevice = .client(client)
 
 			// Unbind from the UDP port and connect to the server via TCP
-			if let client = currentDevice as? Client {
-				client.clearReceptionBroadcastKQueue()
-				client.startTCPconnectionToServer(serverIP: serverIP)
-			}
+			client.clientTCPCommunicationDelegate = self
+			client.startTCPconnectionToServer()
 		default:
 			assertionFailure("Client has received an unknown message \(message.text)")
 			break
@@ -200,37 +217,32 @@ extension Manager: ClientTCPCommunicationDelegate {
 }
 
 extension Manager: GrantRoleDelegate {
-	func deviceAsksServerPermissions(_ device: Device) {
+	func deviceAsksServerPermissions(_ device: NetworkDevice) {
 		// When a client claims to become the server, check if there is already a device which is the current server
-		guard !isThereServer else {
-			(currentDevice as? Client)?.clientTCPCommunicationDelegate = self
+		guard
+			!isThereServer,
+			let device = broadcastDevice
+		else {
 			return
 		}
 
-		// The current device is about to become server.
-		// Clear the queue of events
-		currentDevice.clearReceptionBroadcastKQueue()
 		// Set up your IP as serverIP
 		serverIP = device.ip
 
 		print(Constant.Message.presentMeAsServer)
 
 		// Create an instance of the Server class
-		let server = Server(ip: currentDevice.ip,
-							broadcastIP: currentDevice.broadcastIP,
-							udp_broadcast_message_socket: currentDevice.udp_broadcast_message_socket,
-							udp_reception_message_socket: currentDevice.udp_reception_message_socket
+		let server = Server(ip: device.ip,
+							broadcastIP: device.broadcastIP,
+							udp_broadcast_message_socket: device.udp_broadcast_message_socket,
+							udp_reception_message_socket: device.udp_reception_message_socket
 		)
 
-		self.server = server
+		currentDevice = .server(server)
 		server.serverTCPCommunicationDelegate = self
-		server.udpCommunicationDelegate = currentDevice.udpCommunicationDelegate
-		currentDevice = server
+		server.udpCommunicationDelegate = device.udpCommunicationDelegate
 
-		// Reenable the reception and transmission of the broadcast messages
-		server.createBroadcastKqueue()
-		server.enableTransmissionToBroadcast()
 		// Create a TCP socket to accept clients requests
-		server.createTCPSocket()
+		server.enableTCPCommunication()
 	}
 }

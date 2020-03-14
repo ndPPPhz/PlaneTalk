@@ -21,9 +21,9 @@ class MessageFactory {
 		static let nicknameRegex = "^/name: ([0-z]{4,})$"
 	}
 
-	private let device: Device
+	private let device: NetworkDevice
 	
-	init(device: Device) {
+	init(device: NetworkDevice) {
 		self.device = device
 	}
 

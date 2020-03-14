@@ -7,12 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF3D9D98241D0DCA009079FC /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D97241D0DCA009079FC /* Device.swift */; };
+		EF3D9D9A241D10FC009079FC /* BroadcastDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */; };
+		EF3D9D9F241D163C009079FC /* UDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D9E241D163C009079FC /* UDP.swift */; };
+		EF3D9DA1241D1650009079FC /* ServerTransmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA0241D1650009079FC /* ServerTransmission.swift */; };
+		EF3D9DA3241D1682009079FC /* ClientTransmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA2241D1682009079FC /* ClientTransmission.swift */; };
 		EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585323FEDB4B001020FD /* InterfaceFinder.swift */; };
 		EF50585623FEDC84001020FD /* Interface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585523FEDC84001020FD /* Interface.swift */; };
 		EF50585823FEDEF4001020FD /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585723FEDEF4001020FD /* Server.swift */; };
 		EF50585A23FEDF0C001020FD /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585923FEDF0C001020FD /* Client.swift */; };
 		EF50585C23FEF5C3001020FD /* Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585B23FEF5C3001020FD /* Manager.swift */; };
-		EF50585E23FF0B2B001020FD /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585D23FF0B2B001020FD /* Device.swift */; };
+		EF50585E23FF0B2B001020FD /* NetworkDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585D23FF0B2B001020FD /* NetworkDevice.swift */; };
 		EF5058612400A5A1001020FD /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5058602400A5A1001020FD /* Utilities.swift */; };
 		EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC023F76403002CB0EE /* AppDelegate.swift */; };
 		EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC223F76403002CB0EE /* SceneDelegate.swift */; };
@@ -39,12 +44,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EF3D9D97241D0DCA009079FC /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastDevice.swift; sourceTree = "<group>"; };
+		EF3D9D9E241D163C009079FC /* UDP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDP.swift; sourceTree = "<group>"; };
+		EF3D9DA0241D1650009079FC /* ServerTransmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTransmission.swift; sourceTree = "<group>"; };
+		EF3D9DA2241D1682009079FC /* ClientTransmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTransmission.swift; sourceTree = "<group>"; };
 		EF50585323FEDB4B001020FD /* InterfaceFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceFinder.swift; sourceTree = "<group>"; };
 		EF50585523FEDC84001020FD /* Interface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interface.swift; sourceTree = "<group>"; };
 		EF50585723FEDEF4001020FD /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		EF50585923FEDF0C001020FD /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
 		EF50585B23FEF5C3001020FD /* Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager.swift; sourceTree = "<group>"; };
-		EF50585D23FF0B2B001020FD /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		EF50585D23FF0B2B001020FD /* NetworkDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDevice.swift; sourceTree = "<group>"; };
 		EF5058602400A5A1001020FD /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		EF884EBD23F76403002CB0EE /* PlaneTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaneTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF884EC023F76403002CB0EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -83,12 +93,40 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF3D9D9B241D1603009079FC /* Transmission */ = {
+			isa = PBXGroup;
+			children = (
+				EF3D9D9D241D1623009079FC /* TCP */,
+				EF3D9D9C241D161B009079FC /* UDP */,
+			);
+			path = Transmission;
+			sourceTree = "<group>";
+		};
+		EF3D9D9C241D161B009079FC /* UDP */ = {
+			isa = PBXGroup;
+			children = (
+				EF3D9D9E241D163C009079FC /* UDP.swift */,
+			);
+			path = UDP;
+			sourceTree = "<group>";
+		};
+		EF3D9D9D241D1623009079FC /* TCP */ = {
+			isa = PBXGroup;
+			children = (
+				EF3D9DA0241D1650009079FC /* ServerTransmission.swift */,
+				EF3D9DA2241D1682009079FC /* ClientTransmission.swift */,
+			);
+			path = TCP;
+			sourceTree = "<group>";
+		};
 		EF50585F23FF0BEB001020FD /* Devices */ = {
 			isa = PBXGroup;
 			children = (
 				EF50585723FEDEF4001020FD /* Server.swift */,
 				EF50585923FEDF0C001020FD /* Client.swift */,
-				EF50585D23FF0B2B001020FD /* Device.swift */,
+				EF3D9D97241D0DCA009079FC /* Device.swift */,
+				EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */,
+				EF50585D23FF0B2B001020FD /* NetworkDevice.swift */,
 			);
 			path = Devices;
 			sourceTree = "<group>";
@@ -157,6 +195,7 @@
 		EF95F8112402E3660002C047 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				EF3D9D9B241D1603009079FC /* Transmission */,
 				EF50585F23FF0BEB001020FD /* Devices */,
 				EF95F80F2402E35C0002C047 /* User.swift */,
 				EF50585523FEDC84001020FD /* Interface.swift */,
@@ -253,15 +292,19 @@
 				EF9C42E5241A889000564AC2 /* NibLoadable.swift in Sources */,
 				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
 				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
+				EF3D9DA3241D1682009079FC /* ClientTransmission.swift in Sources */,
 				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,
 				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
 				EF8CBE5E241AB547009AB2D0 /* Reusable.swift in Sources */,
 				EF8CBE62241ABDCD009AB2D0 /* ChatMessage.swift in Sources */,
 				EF9C42E9241A89B300564AC2 /* UIView+Ext.swift in Sources */,
-				EF50585E23FF0B2B001020FD /* Device.swift in Sources */,
+				EF50585E23FF0B2B001020FD /* NetworkDevice.swift in Sources */,
 				EF9C42E1241A858F00564AC2 /* TextBoardView.swift in Sources */,
+				EF3D9D9F241D163C009079FC /* UDP.swift in Sources */,
 				EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */,
 				EF8CBE64241AC1E3009AB2D0 /* MessageFactory.swift in Sources */,
+				EF3D9D9A241D10FC009079FC /* BroadcastDevice.swift in Sources */,
+				EF3D9DA1241D1650009079FC /* ServerTransmission.swift in Sources */,
 				EF8CBE60241AB582009AB2D0 /* UITableView+Ext.swift in Sources */,
 				EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */,
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
@@ -273,6 +316,7 @@
 				EF9C42E7241A899C00564AC2 /* Collection+Ext.swift in Sources */,
 				EF5058612400A5A1001020FD /* Utilities.swift in Sources */,
 				EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */,
+				EF3D9D98241D0DCA009079FC /* Device.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

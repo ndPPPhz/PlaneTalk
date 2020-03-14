@@ -8,41 +8,39 @@
 
 import Foundation
 
-final class Client: BroadcastDevice {
-	var ip: String
-	var broadcastIP: String
+protocol ClientInterface {
+	var serverIP: String { get }
+	
+	// The kqueue for all the tcp events
+	var tcpEventQueue: Int32 { get }
+	// The socket where the client receives the messages
+	var client_tcp_socket_fd: Int32 { get }
+	var clientTCPCommunicationDelegate: ClientTCPCommunicationDelegate? { get }
 
-	// Client udp broadcast socket
-	var udp_broadcast_message_socket: Int32 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
-	// Server udp reception socket
-	var udp_reception_message_socket: Int32 = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)
+	func startTCPconnectionToServer()
+}
+
+final class Client: ClientInterface, NetworkDevice {
+	var ip: String
+	var serverIP: String
+
+	// The kqueue for all the tcp events
+	lazy var tcpEventQueue = kqueue()
 	// TCP socket with the server
 	var client_tcp_socket_fd: Int32 = socket(AF_INET, SOCK_STREAM, 0)
 
-	// The kqueue for all the tcp events
-	private lazy var tcpEventQueue = kqueue()
-	// The kqueue for all the tcp events
-	lazy var broadcastKQueue: Int32 = kqueue()
-
-	weak var roleGrantDelegate: GrantRoleDelegate?
-	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
 	weak var clientTCPCommunicationDelegate: ClientTCPCommunicationDelegate?
 
-	private var serverIP: String?
-
-	init(ip: String, broadcastIP: String) {
+	init(ip: String, serverIP: String) {
 		self.ip = ip
-		self.broadcastIP = broadcastIP
+		self.serverIP = serverIP
 	}
 
-	func startTCPconnectionToServer(serverIP: String) {
+	func startTCPconnectionToServer() {
 		if (client_tcp_socket_fd == -1) {
 			print("TCP Socket creation failed");
 			exit(-1);
 		}
-
-		// Save the serverIP
-		self.serverIP = serverIP
 
 		// The struct containing the address of the server (for the client)
 		let server_tcp_sock_addr = generateTCPSockAddrIn(server_address: serverIP)
@@ -158,11 +156,6 @@ final class Client: BroadcastDevice {
 	}
 
 	func sendToServerTCP(_ text: String) {
-		guard let serverIP = serverIP else {
-			print("Server IP not found")
-			return
-		}
-
 		text.withCString { cstr -> Void in
 			var server_tcp_sock_addr = generateTCPSockAddrIn(server_address: serverIP)
 

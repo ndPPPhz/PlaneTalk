@@ -52,18 +52,18 @@ final class ChatViewController: UIViewController {
 
 	private func initialiseDeviceWith(_ connectedInterface: Interface) {
 		print("Connected to \(connectedInterface.name)")
-		let currentDevice = Client(
+		let currentDevice = Device(
 			ip: connectedInterface.ip,
 			broadcastIP: connectedInterface.broadcastIP
 		)
 
-		self.manager = Manager(currentDevice: currentDevice)
+		self.manager = Manager(broadcastDevice: currentDevice)
 		manager?.presenter = self
 
 		currentDevice.udpCommunicationDelegate = manager
 		currentDevice.roleGrantDelegate = manager
 
-		manager?.allowClientToUDPCommunication()
+		manager?.allowBroadcastDeviceTransmissionReceptionUDPMessages()
 	}
 
 	// MARK: - Utilities
