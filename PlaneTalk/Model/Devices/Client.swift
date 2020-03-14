@@ -9,14 +9,6 @@
 import Foundation
 
 protocol ClientInterface {
-	var serverIP: String { get }
-	
-	// The kqueue for all the tcp events
-	var tcpEventQueue: Int32 { get }
-	// The socket where the client receives the messages
-	var client_tcp_socket_fd: Int32 { get }
-	var clientTCPCommunicationDelegate: ClientTCPCommunicationDelegate? { get }
-
 	func startTCPconnectionToServer()
 }
 

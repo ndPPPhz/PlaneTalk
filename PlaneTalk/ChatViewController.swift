@@ -157,15 +157,15 @@ extension ChatViewController: TextBoardViewDelegate {
 
 extension MessageTableViewCell.ViewData {
 	static func from(_ chatMessage: ChatMessage) -> MessageTableViewCell.ViewData {
-		let textColor = chatMessage.isMe ? MessageTableViewCell.Constant.outgoingMessageTextColor : MessageTableViewCell.Constant.incomingMessageTextColor
-		let backgroundColor = chatMessage.isMe ? MessageTableViewCell.Constant.outgoingMessageBubbleColor : MessageTableViewCell.Constant.incomingMessageBubbleColor
+		let textColor = chatMessage.isMyMessage ? MessageTableViewCell.Constant.outgoingMessageTextColor : MessageTableViewCell.Constant.incomingMessageTextColor
+		let backgroundColor = chatMessage.isMyMessage ? MessageTableViewCell.Constant.outgoingMessageBubbleColor : MessageTableViewCell.Constant.incomingMessageBubbleColor
 
 		return MessageTableViewCell.ViewData(
-			sender: chatMessage.sender,
+			sender: chatMessage.senderAlias,
 			text: chatMessage.text,
 			textColor: textColor,
 			backgroundColor: backgroundColor,
-			alignment: chatMessage.isMe ? .right : .left
+			alignment: chatMessage.isMyMessage ? .right : .left
 		)
 	}
 }

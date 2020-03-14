@@ -9,5 +9,5 @@
 import Foundation
 
 protocol NetworkDevice: AnyObject {
-	var ip: String { get }
+	var ip: IP { get }
 }

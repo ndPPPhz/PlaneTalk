@@ -13,6 +13,6 @@ protocol ServerTCPCommunicationDelegate: UDPCommunicationDelegate {
 	func serverDidReceiveClientTCPText(_ text: String, senderIP: String) -> MessageType
 
 	func serverDidSendText(_ text: String)
-	func serverDidSendClientText(_ text: String, clientIP: String)
+	func serverDidSendClientText(_ text: String, senderAlias: String)
 	func serverDidSendInformationText(_ text: String)
 }

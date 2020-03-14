@@ -33,7 +33,6 @@
 		EF8CBE64241AC1E3009AB2D0 /* MessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */; };
 		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
 		EF95F80C2402D5D20002C047 /* Notification+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Notification+Ext.swift */; };
-		EF95F8102402E35C0002C047 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80F2402E35C0002C047 /* User.swift */; };
 		EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F82E240309370002C047 /* MessageTableViewCell.swift */; };
 		EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF95F82F240309370002C047 /* MessageTableViewCell.xib */; };
 		EF9C42DB241A564F00564AC2 /* ViewDataConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */; };
@@ -73,7 +72,6 @@
 		EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFactory.swift; sourceTree = "<group>"; };
 		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
 		EF95F80B2402D5D20002C047 /* Notification+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Ext.swift"; sourceTree = "<group>"; };
-		EF95F80F2402E35C0002C047 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		EF95F82E240309370002C047 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		EF95F82F240309370002C047 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
 		EF9C42DA241A564F00564AC2 /* ViewDataConfigurable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewDataConfigurable.swift; sourceTree = "<group>"; };
@@ -223,7 +221,6 @@
 			children = (
 				EF3D9D9B241D1603009079FC /* Transmission */,
 				EF50585F23FF0BEB001020FD /* Devices */,
-				EF95F80F2402E35C0002C047 /* User.swift */,
 				EF50585523FEDC84001020FD /* Interface.swift */,
 				EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */,
 				EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */,
@@ -315,7 +312,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EF95F8102402E35C0002C047 /* User.swift in Sources */,
 				EF9C42E5241A889000564AC2 /* NibLoadable.swift in Sources */,
 				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
 				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
