@@ -136,6 +136,7 @@ final class Client: BroadcastDevice {
 		}
 	}
 
+	// Client has received a message from the server
 	private func handleReceivedTCPMessage(socket: Int32) {
 		let receivedStringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 		let receivedStringBufferRawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
@@ -151,7 +152,7 @@ final class Client: BroadcastDevice {
 		}
 
 		let string = String(cString: UnsafePointer(baseAddress))
-		communicationDelegate?.deviceDidReceiveTCPText(string)
+		communicationDelegate?.clientDidReceiveTCPText(string)
 	}
 
 	func sendToServerTCP(_ text: String) {
@@ -174,7 +175,7 @@ final class Client: BroadcastDevice {
 				return
 			}
 			print("Sent to the server: \(text)")
-			communicationDelegate?.deviceDidSendText(text)
+			communicationDelegate?.clientDidSendText(text)
 		}
 	}
 }

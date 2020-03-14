@@ -127,6 +127,7 @@ final class Server: BroadcastDevice {
         }
 	}
 
+	// A new event occurred
 	private func receivedTCPConnectionStatus(_ status: Int32, socketKQueue: Int32, events: [kevent]) {
 		switch status {
 		case 0:
@@ -167,6 +168,7 @@ final class Server: BroadcastDevice {
 		}
 	}
 
+	// A new connection is about to come
 	private func handleNewConnection() {
 		let client_address = sockaddr_in()
 		let connection_socket_and_client_ip: (fd: Int32, IP: String) = withUnsafePointer(to: client_address) { client_address_ptr -> (Int32, String) in
@@ -202,7 +204,7 @@ final class Server: BroadcastDevice {
 		print("TCP Connection accepted")
 	}
 
-	// A message from a client is coming
+	// A message from a client is about to come
 	private func incomingClientTCPText(socket: Int32, user: User) {
 		let receivedStringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 		let rawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
@@ -217,71 +219,69 @@ final class Server: BroadcastDevice {
 		}
 		let string = String(cString: UnsafePointer(baseAddress))
 		// Handle the message in order to understand whether is a standard message or a nick change request
-		handleClientTCPText(string, socket: socket, user: user)
+		sendClientTCPText(string, socket: socket, user: user)
 	}
 
-	private func handleClientTCPText(_ text: String, socket: Int32, user: User) {
-		// Check if it's a nickname change request
-		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
-			connectionSockets[socket]?.changeNickname(newNickname)
-			sendInformationText("\(user.IP) is now \(newNickname)")
-		} else {
-
-			sendClientMessage(text, user, clientSocket: socket)
-		}
-	}
-
+	// MARK: - Send message
 	// Send the message of the client whose socket is clientSocket to all of the other clients
-	private func sendClientMessage(_ text: String, _ user: User, clientSocket: Int32) {
-		guard let message = communicationDelegate?.serverWantsToSendClientTCPText(text, senderIP: user.IP) else {
+	private func sendClientTCPText(_ text: String, socket: Int32, user: User) {
+		guard let messageType = communicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: user.IP) else {
 			print("Nil communicationDelegate")
 			return
 		}
 
-		for event in kEvents where event.ident != UInt(clientSocket) {
-			let fd = event.ident
-
-			message.withCString { cString in
-				let messageLength = Int(strlen(cString))
-				let bytes = send(Int32(fd), cString, messageLength, 0)
-				if bytes < 0 {
-					print("Error sending TCP Message")
-				} else {
-					print("Propagated by the server to socket \(clientSocket)")
-				}
-			}
-		}
-		communicationDelegate?.serverDidSendClientText(text, clientIP: user.IP)
-	}
-
-	func sendServerText(_ text: String) {
-		// Check if it's a nickname change request
-		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
-			nickname = newNickname
-			sendInformationText("\(ip) is now \(newNickname)")
-		} else {
-			guard let messageForEveryone = communicationDelegate?.serverWantsToSendOwnTCPText(text) else {
-				print("Nil communicationDelegate")
-				return
-			}
-
-			for event in kEvents {
+		switch messageType {
+		case .nicknameChangeRequest(let nickname):
+			connectionSockets[socket]?.changeNickname(nickname)
+			sendInformationText("\(user.IP) is now \(nickname)")
+		case .text(let fullText, let content, let senderAlias):
+			for event in kEvents where event.ident != UInt(socket) {
 				let fd = event.ident
-
-				messageForEveryone.withCString { cString in
+				fullText.withCString { cString in
 					let messageLength = Int(strlen(cString))
 					let bytes = send(Int32(fd), cString, messageLength, 0)
 					if bytes < 0 {
 						print("Error sending TCP Message")
 					} else {
-						print("Sent by server: \(text)")
-						communicationDelegate?.serverDidSendText(text)
+						print("Propagated by the server to socket \(socket)")
 					}
 				}
 			}
+			communicationDelegate?.serverDidSendClientText(content, clientIP: user.IP)
 		}
 	}
 
+	// Send server own text
+	func sendServerText(_ text: String) {
+		// Check if it's a nickname change request
+		guard let messageType = communicationDelegate?.serverWantsToSendTCPText(text) else {
+			print("Nil communicationDelegate")
+			return
+		}
+
+		switch messageType {
+		case .text(let fullText, let content, let senderAlias):
+			for event in kEvents {
+				let fd = event.ident
+
+				fullText.withCString { cString in
+					let messageLength = Int(strlen(cString))
+					let bytes = send(Int32(fd), cString, messageLength, 0)
+					if bytes < 0 {
+						print("Error sending TCP Message")
+					} else {
+						print("Sent by server: \(content)")
+						communicationDelegate?.serverDidSendText(content)
+					}
+				}
+			}
+		case .nicknameChangeRequest(nickname: let nickname):
+			self.nickname = nickname
+			sendInformationText("\(ip) is now \(nickname)")
+		}
+	}
+
+	// Send information text such as nickname change
 	func sendInformationText(_ text: String) {
 		for event in kEvents {
 			let fd = event.ident
@@ -297,25 +297,5 @@ final class Server: BroadcastDevice {
 				}
 			}
 		}
-	}
-
-	private func checkPossibleChangeNicknameRegex(in string: String) -> String? {
-		let regexRange = NSRange(string.startIndex..., in: string)
-
-		guard
-			let regex = try? NSRegularExpression(pattern: Constant.nicknameRegex),
-			let match = regex.matches(in: string, range: regexRange).first
-		else {
-			return nil
-		}
-
-		let matchRange = match.range(at: 1)
-
-		guard matchRange != NSRange(location: NSNotFound, length: 0) else {
-			print("Regex error")
-			return nil
-		}
-		let nickname = (string as NSString).substring(with: matchRange)
-		return nickname
 	}
 }

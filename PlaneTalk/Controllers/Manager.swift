@@ -13,18 +13,20 @@ protocol ServerIPProvider: AnyObject {
 }
 
 protocol CommunicationDelegate: AnyObject {
+	// UDP
+	var discoveryServerString: String { get }
 	func deviceDidReceiveBroadcastMessage(_ text: String, from sender: String)
-	func deviceDidReceiveTCPText(_ text: String)
-	func deviceDidSendText(_ text: String)
 
-	// Ask the messageFactory to generate the
-	func serverWantsToSendOwnTCPText(_ text: String) -> String
-	func serverWantsToSendClientTCPText(_ text: String, senderIP: String) -> String
+	// TCP
+	func serverWantsToSendTCPText(_ text: String) -> MessageType
+	func serverDidReceiveClientTCPText(_ text: String, senderIP: String) -> MessageType
 
 	func serverDidSendText(_ text: String)
 	func serverDidSendClientText(_ text: String, clientIP: String)
 	func serverDidSendInformationText(_ text: String)
-	var discoveryServerString: String { get }
+
+	func clientDidReceiveTCPText(_ text: String)
+	func clientDidSendText(_ text: String)
 }
 
 protocol ManagerDelegate: AnyObject {
@@ -81,11 +83,13 @@ final class Manager: ServerIPProvider {
 }
 
 extension Manager: CommunicationDelegate {
-	func serverWantsToSendClientTCPText(_ text: String, senderIP: String) -> String {
-		return messageFactory.generateClientMessageToBeSent(from: text, senderIP: senderIP)
+	// MARK: - UDP Broadcast
+
+	var discoveryServerString: String {
+		return messageFactory.discoveryMessage
 	}
 
-	// MARK: - UDP Broadcast
+	// A new broadcast message has arrived
 	func deviceDidReceiveBroadcastMessage(_ text: String, from sender: String) {
 		// Generate Message
 		let message = messageFactory.receivedUDPMessage(text, from: sender)
@@ -99,6 +103,7 @@ extension Manager: CommunicationDelegate {
 		}
 	}
 
+	// Server has received a client message
 	private func serverHasReceivedBroadcastMessage(_ message: Message) {
 		switch message.text {
 		// If the server receives a discovery message it means that a new client wants to connect
@@ -113,6 +118,7 @@ extension Manager: CommunicationDelegate {
 		}
 	}
 
+	// Client has received a server message
 	private func clientHasReceivedBroadcastMessage(_ message: Message) {
 		switch message.text {
 		// If it's the server response to the discovery message
@@ -140,37 +146,43 @@ extension Manager: CommunicationDelegate {
 
 	// MARK: - TCP
 	// Server
-	func serverWantsToSendOwnTCPText(_ text: String) -> String {
-		return messageFactory.generateServerOwnMessage(from: text)
+
+	// Server wants to send his message
+	func serverWantsToSendTCPText(_ text: String) -> MessageType {
+		return messageFactory.generateServerMessage(from: text)
 	}
 
+	// Server wants to send a client message
+	func serverDidReceiveClientTCPText(_ text: String, senderIP: String) -> MessageType {
+		return messageFactory.generateClientMessage(from: text, senderIP: senderIP)
+	}
+
+	// Server did send his text
 	func serverDidSendText(_ text: String) {
 		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
 		presentMessage(chatMessage: chatMessage)
 	}
 
+	// Server did a client text
 	func serverDidSendClientText(_ text: String, clientIP: String) {
 		let chatMessage = ChatMessage(text: text, sender: clientIP, isMe: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 
+	// Server did send an information text
 	func serverDidSendInformationText(_ text: String) {
 		let chatMessage = ChatMessage(text: text, sender: "Information", isMe: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 
 	// Client
-	func deviceDidReceiveTCPText(_ text: String) {
+	func clientDidReceiveTCPText(_ text: String) {
 		let message = messageFactory.getTextAndServer(from: text)
 		let chatMessage = ChatMessage(text: message.text, sender: message.senderIP, isMe: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 
-	var discoveryServerString: String {
-		return messageFactory.discoveryMessage
-	}
-
-	func deviceDidSendText(_ text: String) {
+	func clientDidSendText(_ text: String) {
 		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
 		presentMessage(chatMessage: chatMessage)
 	}

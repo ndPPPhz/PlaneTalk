@@ -11,10 +11,7 @@ import Foundation
 let udpPort: UInt16 = 9010
 let tcpPort: UInt16 = 8010
 
-enum Constant {
-
-	static let nicknameRegex = "^/name: ([0-z]{4,})$"
-	
+enum Constant {	
 	enum Message {
 		static let searchingServer = "Searching a server nearby"
 		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"

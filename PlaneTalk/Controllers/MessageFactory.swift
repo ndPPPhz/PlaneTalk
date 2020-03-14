@@ -18,6 +18,7 @@ class MessageFactory {
 		static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
 		static let serverResponse = "CHAT-SERVER-RESPONSE-"
 		static let separator = "-/-"
+		static let nicknameRegex = "^/name: ([0-z]{4,})$"
 	}
 
 	private let device: Device
@@ -26,14 +27,24 @@ class MessageFactory {
 		self.device = device
 	}
 
-	func generateServerOwnMessage(from text: String) -> String {
-		return [text, device.ip].joined(separator: Constant.separator)
+	// MARK: - TCP
+	func generateServerMessage(from text: String) -> MessageType {
+		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
+			return .nicknameChangeRequest(nickname: newNickname)
+		} else {
+			return .text(fullText: [text, device.ip].joined(separator: Constant.separator), content: text, senderAlias: device.ip)
+		}
 	}
 
-	func generateClientMessageToBeSent(from text: String, senderIP: String) -> String {
-		return [text, senderIP].joined(separator: Constant.separator)
+	func generateClientMessage(from text: String, senderIP: String) -> MessageType {
+		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
+			return .nicknameChangeRequest(nickname: newNickname)
+		} else {
+			return .text(fullText: [text, senderIP].joined(separator: Constant.separator), content: text, senderAlias: senderIP)
+		}
 	}
 
+	// MARK: - UDP
 	func receivedUDPMessage(_ text: String, from senderIP: String) -> Message {
 		return Message(text: text, senderIP: senderIP)
 	}
@@ -57,5 +68,26 @@ class MessageFactory {
 
 	var serverBroadcastAuthenticationResponseTemplate: String {
 		return Constant.serverResponse
+	}
+
+	//MARK: - Regex
+	private func checkPossibleChangeNicknameRegex(in string: String) -> String? {
+		let regexRange = NSRange(string.startIndex..., in: string)
+
+		guard
+			let regex = try? NSRegularExpression(pattern: Constant.nicknameRegex),
+			let match = regex.matches(in: string, range: regexRange).first
+		else {
+			return nil
+		}
+
+		let matchRange = match.range(at: 1)
+
+		guard matchRange != NSRange(location: NSNotFound, length: 0) else {
+			print("Regex error")
+			return nil
+		}
+		let nickname = (string as NSString).substring(with: matchRange)
+		return nickname
 	}
 }
