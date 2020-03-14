@@ -9,19 +9,12 @@
 import Foundation
 
 protocol ServerInterface: BroadcastDevice {
-	// Incoming TCP connections socket
-	var incoming_tcp_connections_socket: Int32 { get }
-	var tcpKQueue: Int32 { get }
-	var connectionSockets: [Int32: User]  { get }
-	var maxListeningConnections: Int32 { get }
-	var serverTCPCommunicationDelegate: ServerTCPCommunicationDelegate? { get }
-
 	func enableTCPCommunication()
 	func handleNewConnection()
-	func receivedClientTCPText(_ text: String, socket: Int32, user: User)
-	func sendClientText(fullText: String, content: String, user: User, socket: Int32)
+	func receivedClientTCPText(_ text: String, socket: Int32, senderIP: String)
+	func sendClientText(fullText: String, content: String, senderAlias: String, socket: Int32)
 	func sendServerText(_ text: String)
-	func sendInformationText(_ text: String)
+	func sendInformationText(fullText: String, content: String)
 }
 
 final class Server: ServerInterface {
@@ -38,22 +31,19 @@ final class Server: ServerInterface {
 	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
 	weak var roleGrantDelegate: GrantRoleDelegate? // to be removed
 
-
 	// Incoming TCP connections socket
-	var incoming_tcp_connections_socket: Int32 = -1
+	private var incoming_tcp_connections_socket: Int32 = -1
 	// Kqueue to organise tcp events
-	let tcpKQueue: Int32 = kqueue()
+	private let tcpKQueue: Int32 = kqueue()
 
 	// Map of the fd and their IPs
-	var connectionSockets: [Int32: User] = [:]
+	var connectionSockets: [Int32: String] = [:]
 	// Array of all the kevents
 	private var kEvents: [kevent] = []
 
-	let maxListeningConnections: Int32 = 5
-
 	weak var serverTCPCommunicationDelegate: ServerTCPCommunicationDelegate?
 
-	private var nickname: String?
+	let maxListeningConnections: Int32 = 5
 	var ip: String
 
 	init(
@@ -177,8 +167,8 @@ final class Server: ServerInterface {
 					close(Int32(fd))
 				} else if incoming_tcp_connections_socket == fd {
 					handleNewConnection()
-				} else if let fd_and_user = connectionSockets.first(where: ({ $0.key == fd })) {
-					incomingClientTCPText(socket: fd_and_user.key, user: fd_and_user.value)
+				} else if let ip = connectionSockets[Int32(fd)] {
+					incomingClientTCPText(socket: Int32(fd), senderIP: ip)
 				}
 			}
 		default:
@@ -205,7 +195,7 @@ final class Server: ServerInterface {
 		}
 
 		// Save client ip with associated fd
-		connectionSockets[connection_socket_and_client_ip.fd] = User(IP: connection_socket_and_client_ip.IP)
+		connectionSockets[connection_socket_and_client_ip.fd] = connection_socket_and_client_ip.IP
 
 		// Create the kevent structure that sets up our kqueue to listen
         // for notifications
@@ -225,7 +215,7 @@ final class Server: ServerInterface {
 	}
 
 	// A message from a client is about to come
-	private func incomingClientTCPText(socket: Int32, user: User) {
+	private func incomingClientTCPText(socket: Int32, senderIP: String) {
 		let receivedStringBuffer = UnsafeMutableBufferPointer<CChar>.allocate(capacity: 65536)
 		let rawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
 
@@ -239,27 +229,26 @@ final class Server: ServerInterface {
 		}
 		let string = String(cString: UnsafePointer(baseAddress))
 		// Handle the message in order to understand whether is a standard message or a nick change request
-		receivedClientTCPText(string, socket: socket, user: user)
+		receivedClientTCPText(string, socket: socket, senderIP: senderIP)
 	}
 
 	// MARK: - Send message
 	// Send the message of the client whose socket is clientSocket to all of the other clients
-	 func receivedClientTCPText(_ text: String, socket: Int32, user: User) {
-		guard let messageType = serverTCPCommunicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: user.IP) else {
+	 func receivedClientTCPText(_ text: String, socket: Int32, senderIP: String) {
+		guard let messageType = serverTCPCommunicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: senderIP) else {
 			print("Nil communicationDelegate")
 			return
 		}
 
 		switch messageType {
-		case .nicknameChangeRequest(let nickname):
-			connectionSockets[socket]?.changeNickname(nickname)
-			sendInformationText("\(user.IP) is now \(nickname)")
+		case .nicknameChangeRequest(let fullText, let content):
+			sendInformationText(fullText: fullText, content: content)
 		case .text(let fullText, let content, let senderAlias):
-			sendClientText(fullText: fullText, content: content, user: user, socket: socket)
+			sendClientText(fullText: fullText, content: content, senderAlias: senderAlias, socket: socket)
 		}
 	}
 
-	func sendClientText(fullText: String, content: String, user: User, socket: Int32) {
+	func sendClientText(fullText: String, content: String, senderAlias: String, socket: Int32) {
 		for event in kEvents where event.ident != UInt(socket) {
 			let fd = event.ident
 			fullText.withCString { cString in
@@ -272,7 +261,7 @@ final class Server: ServerInterface {
 				}
 			}
 		}
-		serverTCPCommunicationDelegate?.serverDidSendClientText(content, clientIP: user.IP)
+		serverTCPCommunicationDelegate?.serverDidSendClientText(content, senderAlias: senderAlias)
 	}
 
 	// Send server own text
@@ -284,7 +273,7 @@ final class Server: ServerInterface {
 		}
 
 		switch messageType {
-		case .text(let fullText, let content, let senderAlias):
+		case .text(let fullText, let content, _):
 			for event in kEvents {
 				let fd = event.ident
 
@@ -299,25 +288,24 @@ final class Server: ServerInterface {
 					}
 				}
 			}
-		case .nicknameChangeRequest(nickname: let nickname):
-			self.nickname = nickname
-			sendInformationText("\(ip) is now \(nickname)")
+		case .nicknameChangeRequest(let fullText, let content):
+			sendInformationText(fullText: fullText, content: content)
 		}
 	}
 
 	// Send information text such as nickname change
-	func sendInformationText(_ text: String) {
+	func sendInformationText(fullText: String, content: String) {
 		for event in kEvents {
 			let fd = event.ident
 
-			text.withCString { cString in
+			fullText.withCString { cString in
 				let messageLength = Int(strlen(cString))
 				let bytes = send(Int32(fd), cString, messageLength, 0)
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Sent by server: \(text)")
-					serverTCPCommunicationDelegate?.serverDidSendInformationText(text)
+					print("Sent by server: \(content)")
+					serverTCPCommunicationDelegate?.serverDidSendInformationText(content)
 				}
 			}
 		}

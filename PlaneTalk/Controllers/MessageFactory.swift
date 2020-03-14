@@ -18,9 +18,11 @@ class MessageFactory {
 		static let serverDiscovery = "CHAT-SERVER-DISCOVERY"
 		static let serverResponse = "CHAT-SERVER-RESPONSE-"
 		static let separator = "-/-"
+		static let newNicknameString = "%@ is %@"
 		static let nicknameRegex = "^/name: ([0-z]{4,})$"
 	}
 
+	private var nicknames: [IP: String] = [:]
 	private let device: NetworkDevice
 	
 	init(device: NetworkDevice) {
@@ -30,17 +32,23 @@ class MessageFactory {
 	// MARK: - TCP
 	func generateServerMessage(from text: String) -> MessageType {
 		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
-			return .nicknameChangeRequest(nickname: newNickname)
+			nicknames[device.ip] = newNickname
+			let content = String(format: Constant.newNicknameString, device.ip, newNickname)
+			return .nicknameChangeRequest(fullText: [newNickname, content].joined(separator: Constant.separator) , content: content)
 		} else {
-			return .text(fullText: [text, device.ip].joined(separator: Constant.separator), content: text, senderAlias: device.ip)
+			let senderAlias = nicknames[device.ip] ?? device.ip
+			return .text(fullText: [senderAlias,text].joined(separator: Constant.separator), content: text, senderAlias: senderAlias)
 		}
 	}
 
-	func generateClientMessage(from text: String, senderIP: String) -> MessageType {
+	func generateClientMessage(from text: String, senderIP: IP) -> MessageType {
 		if let newNickname = checkPossibleChangeNicknameRegex(in: text) {
-			return .nicknameChangeRequest(nickname: newNickname)
+			nicknames[senderIP] = newNickname
+			let content = String(format: Constant.newNicknameString, senderIP, newNickname)
+			return .nicknameChangeRequest(fullText: [newNickname, content].joined(separator: Constant.separator) , content: content)
 		} else {
-			return .text(fullText: [text, senderIP].joined(separator: Constant.separator), content: text, senderAlias: senderIP)
+			let senderAlias = nicknames[senderIP] ?? senderIP
+			return .text(fullText: [senderAlias, text].joined(separator: Constant.separator), content: text, senderAlias: senderAlias)
 		}
 	}
 
@@ -49,13 +57,14 @@ class MessageFactory {
 		return Message(text: text, senderIP: senderIP)
 	}
 
-	func getTextAndServer(from text: String) -> Message {
+	func receivedUDPText(_ text: String) -> Message {
 		let splitted = text.components(separatedBy: Constant.separator)
 		guard splitted.count > 1 else {
+			assertionFailure("Missing field")
 			return Message(text: text, senderIP: "!!")
 		}
 		
-		return Message(text: splitted[0], senderIP: splitted[1])
+		return Message(text: splitted[1], senderIP: splitted[0])
 	}
 
 	var serverBroadcastAuthenticationResponse: String {

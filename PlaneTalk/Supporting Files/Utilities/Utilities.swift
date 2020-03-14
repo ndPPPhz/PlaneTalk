@@ -8,6 +8,9 @@
 
 import Foundation
 
+typealias IP = String
+typealias Socket = Int32
+
 enum Constant {	
 	enum Message {
 		static let searchingServer = "Searching a server nearby"
@@ -19,5 +22,3 @@ enum Constant {
 		static let wlan = "en0"
 	}
 }
-
-

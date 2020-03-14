@@ -170,31 +170,31 @@ extension Manager: UDPCommunicationDelegate {
 
 // MARK: - ServerTCPCommunicationDelegate
 extension Manager: ServerTCPCommunicationDelegate {
-	// Server wants to send his message
+	// Generate a MessageType using the protocol syntax
 	func serverWantsToSendTCPText(_ text: String) -> MessageType {
 		return messageFactory.generateServerMessage(from: text)
 	}
 
-	// Server wants to send a client message
+	// Generate a MessageType using the protocol syntax
 	func serverDidReceiveClientTCPText(_ text: String, senderIP: String) -> MessageType {
 		return messageFactory.generateClientMessage(from: text, senderIP: senderIP)
 	}
 
 	// Server did send his text
 	func serverDidSendText(_ text: String) {
-		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
+		let chatMessage = ChatMessage(text: text, senderAlias: "Me", isMyMessage: true)
 		presentMessage(chatMessage: chatMessage)
 	}
 
 	// Server did a client text
-	func serverDidSendClientText(_ text: String, clientIP: String) {
-		let chatMessage = ChatMessage(text: text, sender: clientIP, isMe: false)
+	func serverDidSendClientText(_ text: String, senderAlias: String) {
+		let chatMessage = ChatMessage(text: text, senderAlias: senderAlias, isMyMessage: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 
 	// Server did send an information text
 	func serverDidSendInformationText(_ text: String) {
-		let chatMessage = ChatMessage(text: text, sender: "Information", isMe: false)
+		let chatMessage = ChatMessage(text: text, senderAlias: "Information", isMyMessage: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 }
@@ -202,13 +202,13 @@ extension Manager: ServerTCPCommunicationDelegate {
 // MARK: - ClientTCPCommunicationDelegate
 extension Manager: ClientTCPCommunicationDelegate {
 	func clientDidReceiveTCPText(_ text: String) {
-		let message = messageFactory.getTextAndServer(from: text)
-		let chatMessage = ChatMessage(text: message.text, sender: message.senderIP, isMe: false)
+		let message = messageFactory.receivedUDPText(text)
+		let chatMessage = ChatMessage(text: message.text, senderAlias: message.senderIP, isMyMessage: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 
 	func clientDidSendText(_ text: String) {
-		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
+		let chatMessage = ChatMessage(text: text, senderAlias: "Me", isMyMessage: true)
 		presentMessage(chatMessage: chatMessage)
 	}
 }
