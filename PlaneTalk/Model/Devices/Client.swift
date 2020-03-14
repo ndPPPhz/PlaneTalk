@@ -24,8 +24,10 @@ final class Client: BroadcastDevice {
 	// The kqueue for all the tcp events
 	lazy var broadcastKQueue: Int32 = kqueue()
 
-	weak var roleGrantDelegate: ManagerDelegate?
-	weak var communicationDelegate: CommunicationDelegate?
+	weak var roleGrantDelegate: GrantRoleDelegate?
+	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
+	weak var clientTCPCommunicationDelegate: ClientTCPCommunicationDelegate?
+
 	private var serverIP: String?
 
 	init(ip: String, broadcastIP: String) {
@@ -152,7 +154,7 @@ final class Client: BroadcastDevice {
 		}
 
 		let string = String(cString: UnsafePointer(baseAddress))
-		communicationDelegate?.clientDidReceiveTCPText(string)
+		clientTCPCommunicationDelegate?.clientDidReceiveTCPText(string)
 	}
 
 	func sendToServerTCP(_ text: String) {
@@ -175,7 +177,7 @@ final class Client: BroadcastDevice {
 				return
 			}
 			print("Sent to the server: \(text)")
-			communicationDelegate?.clientDidSendText(text)
+			clientTCPCommunicationDelegate?.clientDidSendText(text)
 		}
 	}
 }

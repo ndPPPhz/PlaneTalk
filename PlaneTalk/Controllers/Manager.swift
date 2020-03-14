@@ -12,25 +12,28 @@ protocol ServerIPProvider: AnyObject {
 	var serverIP: String? { get }
 }
 
-protocol CommunicationDelegate: AnyObject {
-	// UDP
+protocol UDPCommunicationDelegate: AnyObject {
 	var discoveryServerString: String { get }
 	func deviceDidReceiveBroadcastMessage(_ text: String, from sender: String)
+}
 
-	// TCP
+protocol ServerTCPCommunicationDelegate: UDPCommunicationDelegate {
 	func serverWantsToSendTCPText(_ text: String) -> MessageType
 	func serverDidReceiveClientTCPText(_ text: String, senderIP: String) -> MessageType
 
 	func serverDidSendText(_ text: String)
 	func serverDidSendClientText(_ text: String, clientIP: String)
 	func serverDidSendInformationText(_ text: String)
+}
 
+protocol ClientTCPCommunicationDelegate: UDPCommunicationDelegate {
 	func clientDidReceiveTCPText(_ text: String)
 	func clientDidSendText(_ text: String)
 }
 
-protocol ManagerDelegate: AnyObject {
-	func askServerPermissions(_ device: Device)
+
+protocol GrantRoleDelegate: AnyObject {
+	func deviceAsksServerPermissions(_ device: Device)
 }
 
 final class Manager: ServerIPProvider {
@@ -80,11 +83,17 @@ final class Manager: ServerIPProvider {
 		currentDevice.enableTransmissionToBroadcast()
 		currentDevice.findServer()
 	}
+
+	private func presentMessage(chatMessage: ChatMessage) {
+		DispatchQueue.main.async { [weak self] in
+			guard let _self = self else { return }
+			_self.presenter?.show(chatMessage: chatMessage)
+		}
+	}
 }
 
-extension Manager: CommunicationDelegate {
-	// MARK: - UDP Broadcast
-
+// MARK: - UDP UDPCommunicationDelegate
+extension Manager: UDPCommunicationDelegate {
 	var discoveryServerString: String {
 		return messageFactory.discoveryMessage
 	}
@@ -143,10 +152,10 @@ extension Manager: CommunicationDelegate {
 			break
 		}
 	}
+}
 
-	// MARK: - TCP
-	// Server
-
+// MARK: - ServerTCPCommunicationDelegate
+extension Manager: ServerTCPCommunicationDelegate {
 	// Server wants to send his message
 	func serverWantsToSendTCPText(_ text: String) -> MessageType {
 		return messageFactory.generateServerMessage(from: text)
@@ -174,8 +183,10 @@ extension Manager: CommunicationDelegate {
 		let chatMessage = ChatMessage(text: text, sender: "Information", isMe: false)
 		presentMessage(chatMessage: chatMessage)
 	}
+}
 
-	// Client
+// MARK: - ClientTCPCommunicationDelegate
+extension Manager: ClientTCPCommunicationDelegate {
 	func clientDidReceiveTCPText(_ text: String) {
 		let message = messageFactory.getTextAndServer(from: text)
 		let chatMessage = ChatMessage(text: message.text, sender: message.senderIP, isMe: false)
@@ -186,19 +197,13 @@ extension Manager: CommunicationDelegate {
 		let chatMessage = ChatMessage(text: text, sender: "Me", isMe: true)
 		presentMessage(chatMessage: chatMessage)
 	}
-
-	func presentMessage(chatMessage: ChatMessage) {
-		DispatchQueue.main.async { [weak self] in
-			guard let _self = self else { return }
-			_self.presenter?.show(chatMessage: chatMessage)
-		}
-	}
 }
 
-extension Manager: ManagerDelegate {
-	func askServerPermissions(_ device: Device) {
+extension Manager: GrantRoleDelegate {
+	func deviceAsksServerPermissions(_ device: Device) {
 		// When a client claims to become the server, check if there is already a device which is the current server
 		guard !isThereServer else {
+			(currentDevice as? Client)?.clientTCPCommunicationDelegate = self
 			return
 		}
 
@@ -218,7 +223,8 @@ extension Manager: ManagerDelegate {
 		)
 
 		self.server = server
-		server.communicationDelegate = currentDevice.communicationDelegate
+		server.serverTCPCommunicationDelegate = self
+		server.udpCommunicationDelegate = currentDevice.udpCommunicationDelegate
 		currentDevice = server
 
 		// Reenable the reception and transmission of the broadcast messages

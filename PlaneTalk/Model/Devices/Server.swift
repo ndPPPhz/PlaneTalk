@@ -9,9 +9,6 @@
 import Foundation
 
 final class Server: BroadcastDevice {
-	weak var roleGrantDelegate: ManagerDelegate?
-	weak var communicationDelegate: CommunicationDelegate?
-
 	// Server udp broadcast socket
 	let udp_broadcast_message_socket: Int32
 	// Server udp reception socket
@@ -32,6 +29,10 @@ final class Server: BroadcastDevice {
 
 	let maxListeningConnections: Int32 = 5
 
+	weak var roleGrantDelegate: GrantRoleDelegate?
+	weak var serverTCPCommunicationDelegate: ServerTCPCommunicationDelegate?
+	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
+	
 	private var nickname: String?
 	var ip: String
 	var broadcastIP: String
@@ -225,7 +226,7 @@ final class Server: BroadcastDevice {
 	// MARK: - Send message
 	// Send the message of the client whose socket is clientSocket to all of the other clients
 	private func sendClientTCPText(_ text: String, socket: Int32, user: User) {
-		guard let messageType = communicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: user.IP) else {
+		guard let messageType = serverTCPCommunicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: user.IP) else {
 			print("Nil communicationDelegate")
 			return
 		}
@@ -247,14 +248,14 @@ final class Server: BroadcastDevice {
 					}
 				}
 			}
-			communicationDelegate?.serverDidSendClientText(content, clientIP: user.IP)
+			serverTCPCommunicationDelegate?.serverDidSendClientText(content, clientIP: user.IP)
 		}
 	}
 
 	// Send server own text
 	func sendServerText(_ text: String) {
 		// Check if it's a nickname change request
-		guard let messageType = communicationDelegate?.serverWantsToSendTCPText(text) else {
+		guard let messageType = serverTCPCommunicationDelegate?.serverWantsToSendTCPText(text) else {
 			print("Nil communicationDelegate")
 			return
 		}
@@ -271,7 +272,7 @@ final class Server: BroadcastDevice {
 						print("Error sending TCP Message")
 					} else {
 						print("Sent by server: \(content)")
-						communicationDelegate?.serverDidSendText(content)
+						serverTCPCommunicationDelegate?.serverDidSendText(content)
 					}
 				}
 			}
@@ -293,7 +294,7 @@ final class Server: BroadcastDevice {
 					print("Error sending TCP Message")
 				} else {
 					print("Sent by server: \(text)")
-					communicationDelegate?.serverDidSendInformationText(text)
+					serverTCPCommunicationDelegate?.serverDidSendInformationText(text)
 				}
 			}
 		}

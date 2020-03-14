@@ -19,8 +19,8 @@ protocol BroadcastDevice: Device {
 
 	var broadcastKQueue: Int32 { get }
 
-	var communicationDelegate: CommunicationDelegate? { get }
-	var roleGrantDelegate: ManagerDelegate? { get }
+	var udpCommunicationDelegate: UDPCommunicationDelegate? { get }
+	var roleGrantDelegate: GrantRoleDelegate? { get }
 }
 
 extension BroadcastDevice {
@@ -107,7 +107,7 @@ extension BroadcastDevice {
 							let text = String(cString: UnsafePointer(baseAddress))
 							DispatchQueue.main.async { [weak self] in
 								guard let _self = self else { return }
-								_self.communicationDelegate?.deviceDidReceiveBroadcastMessage(text, from: senderIP)
+								_self.udpCommunicationDelegate?.deviceDidReceiveBroadcastMessage(text, from: senderIP)
 							}
 						}
 					}
@@ -147,7 +147,7 @@ extension BroadcastDevice {
 
 
 	func findServer() {
-		let serverDiscoveryString = communicationDelegate?.discoveryServerString
+		let serverDiscoveryString = udpCommunicationDelegate?.discoveryServerString
 		
 		serverDiscoveryString?.withCString { cString in
 			let broadcastMessageLength = Int(strlen(cString))
@@ -161,7 +161,7 @@ extension BroadcastDevice {
 
 				DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
 					guard let _self = self else { return }
-					_self.roleGrantDelegate?.askServerPermissions(_self)
+					_self.roleGrantDelegate?.deviceAsksServerPermissions(_self)
 				}
 			}
 		}

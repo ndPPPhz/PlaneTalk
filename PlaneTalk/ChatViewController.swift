@@ -60,7 +60,7 @@ final class ChatViewController: UIViewController {
 		self.manager = Manager(currentDevice: currentDevice)
 		manager?.presenter = self
 
-		currentDevice.communicationDelegate = manager
+		currentDevice.udpCommunicationDelegate = manager
 		currentDevice.roleGrantDelegate = manager
 
 		manager?.allowClientToUDPCommunication()
