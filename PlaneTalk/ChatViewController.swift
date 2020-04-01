@@ -19,7 +19,7 @@ final class ChatViewController: UIViewController {
 		static let viewBackgroundColor = UIColor(red: 246/255, green: 245/255, blue: 246/255, alpha: 1)
 	}
 
-	@IBOutlet private var tableView: UITableView!
+	@IBOutlet private var tableView: UIChatTableView!
 	@IBOutlet private var textBoardViewContainerBottomConstraint: NSLayoutConstraint!
 	@IBOutlet private var textBoardViewContainer: UIView! {
 		didSet {
@@ -33,7 +33,17 @@ final class ChatViewController: UIViewController {
 
 	private var messages: [ChatMessage] = [] {
 		didSet {
-			tableView.reloadData()
+			tableView.reloadDataWithCompletion { [weak self] in
+				guard let _self = self else { return }
+
+				// When the content height is bigger that the tableview frame's height, it means that the
+				// content is exceeding the table view frame (id est the visible space) and then
+				// scroll to the bottom
+				let difference = _self.tableView.contentSize.height - _self.tableView.frame.height
+				if difference > 0 {
+					_self.tableView.setContentOffset(CGPoint(x: 0, y: difference), animated: false)
+				}
+			}
 		}
 	}
 

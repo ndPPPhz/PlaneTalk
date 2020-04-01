@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EF37DFEB24354F97009F1E29 /* UIChatTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */; };
 		EF3D9D98241D0DCA009079FC /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D97241D0DCA009079FC /* Device.swift */; };
 		EF3D9D9A241D10FC009079FC /* BroadcastDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */; };
 		EF3D9D9F241D163C009079FC /* UDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D9E241D163C009079FC /* UDP.swift */; };
@@ -44,6 +45,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIChatTableView.swift; sourceTree = "<group>"; };
 		EF3D9D97241D0DCA009079FC /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
 		EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastDevice.swift; sourceTree = "<group>"; };
 		EF3D9D9E241D163C009079FC /* UDP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDP.swift; sourceTree = "<group>"; };
@@ -183,6 +185,7 @@
 				EF884EC023F76403002CB0EE /* AppDelegate.swift */,
 				EF884EC223F76403002CB0EE /* SceneDelegate.swift */,
 				EF884EC423F76403002CB0EE /* ChatViewController.swift */,
+				EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */,
 				EF95F80E2402D7380002C047 /* Controllers */,
 				EF95F8112402E3660002C047 /* Model */,
 				EF95F80D2402D65D0002C047 /* Supporting Files */,
@@ -315,6 +318,7 @@
 				EF9C42E5241A889000564AC2 /* NibLoadable.swift in Sources */,
 				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
 				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
+				EF37DFEB24354F97009F1E29 /* UIChatTableView.swift in Sources */,
 				EF3D9DA3241D1682009079FC /* ClientTransmission.swift in Sources */,
 				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,
 				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
