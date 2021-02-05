@@ -1,14 +1,6 @@
-<p align="center"> 
-<img src="https://user-images.githubusercontent.com/6486741/76807958-1327d680-67de-11ea-93df-928ded8ba95d.png" width=125px>
-</br><img src="https://img.shields.io/badge/iOS-swift-green">
-</p>
-
-
 # PlaneTalk
-
 <p align="center">
 <img src="https://user-images.githubusercontent.com/6486741/76912323-62880880-68ab-11ea-938f-15b7519726db.gif">
-
 </p>
 
 
