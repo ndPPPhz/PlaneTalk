@@ -10,15 +10,3 @@ import Foundation
 
 typealias IP = String
 typealias Socket = Int32
-
-enum Constant {	
-	enum Message {
-		static let searchingServer = "Searching a server nearby"
-		static let presentMeAsServer = "Hello. I'm the server. Start spreading the news"
-	}
-
-	enum Interface {
-		static let hotspot = "bridge"
-		static let wlan = "en0"
-	}
-}

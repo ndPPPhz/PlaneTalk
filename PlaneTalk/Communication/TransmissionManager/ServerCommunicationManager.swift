@@ -1,64 +1,54 @@
 //
-//  Server.swift
-//  SendiOS
+//  ServerCommunicationManager.swift
+//  PlaneTalk
 //
-//  Created by Annino De Petra on 20/02/2020.
-//  Copyright © 2020 Annino De Petra. All rights reserved.
+//  Created by Annino De Petra on 14/04/2021.
+//  Copyright © 2021 Annino De Petra. All rights reserved.
 //
 
 import Foundation
 
-protocol ServerInterface: BroadcastDevice {
+protocol ServerCommunicationInterface {
 	func enableTCPCommunication()
-	func handleNewConnection()
-	func receivedClientTCPText(_ text: String, socket: Int32, senderIP: String)
-	func sendClientText(fullText: String, content: String, senderAlias: String, socket: Int32)
-	func sendServerText(_ text: String)
-	func sendInformationText(fullText: String, content: String)
+	func sendClientMessage(fullText: String, senderIP: String, socket: Int32)
+	func sendServerMessage(_ text: String)
+	func closeAll()
 }
 
-final class Server: ServerInterface {
-	// MARK: - BroadcastDevice
-	var broadcastIP: String
-
-	// Server udp broadcast socket
-	let udp_broadcast_message_socket: Int32
-	// Server udp reception socket
-	let udp_reception_message_socket: Int32
-
+final class ServerCommunicationManager: ServerCommunicationInterface {
 	// Kqueue to organise broadcast events
-	lazy var udpEventsKQueue: Int32 = kqueue()
-	weak var udpCommunicationDelegate: UDPCommunicationDelegate?
-	weak var roleGrantDelegate: GrantRoleDelegate? // to be removed
-
+	private lazy var udpEventsKQueue: Int32 = kqueue()
 	// Incoming TCP connections socket
 	private var incoming_tcp_connections_socket: Int32 = -1
 	// Kqueue to organise tcp events
 	private let tcpKQueue: Int32 = kqueue()
-
 	// Map of the fd and their IPs
-	var connectionSockets: [Int32: String] = [:]
+	private var connectionSockets: [Int32: String] = [:]
 	// Array of all the kevents
 	private var kEvents: [kevent] = []
 
-	weak var serverTCPCommunicationDelegate: ServerTCPCommunicationDelegate?
+	private let maxListeningConnections: Int32 = 5
+	private let kQueueEventQueue: DispatchQueue
 
-	let maxListeningConnections: Int32 = 5
-	var ip: String
+	private let serverMessageFactory: ServerMessageFactoryInterface
 
+	weak var serverTCPCommunicationDelegate: ServerCommunicationDelegate?
+	
 	init(
-		ip: String,
-		broadcastIP: String,
-		udp_broadcast_message_socket: Int32,
-		udp_reception_message_socket: Int32
+		kQueueEventQueue: DispatchQueue = DispatchQueue(label: "com.ndPPPhz.PlaneTalk-serverKQueue", qos: .userInteractive),
+		serverMessageFactory: ServerMessageFactoryInterface
 	) {
-		self.ip = ip
-		self.broadcastIP = broadcastIP
-		self.udp_broadcast_message_socket = udp_broadcast_message_socket
-		self.udp_reception_message_socket = udp_reception_message_socket
+		self.kQueueEventQueue = kQueueEventQueue
+		self.serverMessageFactory = serverMessageFactory
 	}
 
 	func enableTCPCommunication() {
+		createIncomingConnectionsSocket()
+		createIncomingConnectionsSocketKQueue()
+		watchEvents()
+	}
+
+	private func createIncomingConnectionsSocket() {
 		incoming_tcp_connections_socket = socket(AF_INET, SOCK_STREAM, 0)
 		if (incoming_tcp_connections_socket == -1) {
 			print("socket creation failed...\n");
@@ -97,7 +87,6 @@ final class Server: ServerInterface {
 		}
 
 		print("Created TCP socket. Server awaiting")
-		createIncomingConnectionsSocketKQueue()
 	}
 
 	private func createIncomingConnectionsSocketKQueue() {
@@ -107,34 +96,31 @@ final class Server: ServerInterface {
 		 }
 
 		// Create the kevent structure that sets up our kqueue to listen
-        // for notifications
-        var sockKevent = kevent(
-            ident: UInt(incoming_tcp_connections_socket),
-            filter: Int16(EVFILT_READ),
-            flags: UInt16(EV_ADD | EV_ENABLE),
-            fflags: 0,
-            data: 0,
-            udata: nil
-        )
+		// for notifications
+		var sockKevent = kevent(
+			ident: UInt(incoming_tcp_connections_socket),
+			filter: Int16(EVFILT_READ),
+			flags: UInt16(EV_ADD | EV_ENABLE),
+			fflags: 0,
+			data: 0,
+			udata: nil
+		)
 
 		// This is where the kqueue is register with our
 		 // interest for the notifications described by
 		 // our kevent structure sockKevent
 		 kevent(tcpKQueue, &sockKevent, 1, nil, 0, nil)
-
-		watchEvents()
 	}
 
 	private func watchEvents() {
-        DispatchQueue.global(qos: .default).async { [weak self] in
+		kQueueEventQueue.async { [weak self] in
 			guard let _self = self else { return }
 			var events: [kevent] = Array<kevent>(repeating: kevent(), count: 5)
-            while true {
+			while true {
 				let status = kevent(_self.tcpKQueue, nil, 0, &events, 1, nil)
-				print("")
 				_self.receivedTCPConnectionStatus(status, socketKQueue: _self.tcpKQueue, events: events)
-            }
-        }
+			}
+		}
 	}
 
 	// A new event occurred
@@ -179,7 +165,7 @@ final class Server: ServerInterface {
 	}
 
 	// A new connection is about to come
-	func handleNewConnection() {
+	private func handleNewConnection() {
 		let client_address = sockaddr_in()
 		let connection_socket_and_client_ip: (fd: Int32, IP: String) = withUnsafePointer(to: client_address) { client_address_ptr -> (Int32, String) in
 			let raw_client_address_ptr = UnsafeRawPointer(client_address_ptr).bindMemory(to: sockaddr.self, capacity: 1)
@@ -198,15 +184,15 @@ final class Server: ServerInterface {
 		connectionSockets[connection_socket_and_client_ip.fd] = connection_socket_and_client_ip.IP
 
 		// Create the kevent structure that sets up our kqueue to listen
-        // for notifications
-        var sockKevent = kevent(
+		// for notifications
+		var sockKevent = kevent(
 			ident: UInt(connection_socket_and_client_ip.fd),
-            filter: Int16(EVFILT_READ),
-            flags: UInt16(EV_ADD | EV_ENABLE),
-            fflags: 0,
-            data: 0,
-            udata: nil
-        )
+			filter: Int16(EVFILT_READ),
+			flags: UInt16(EV_ADD | EV_ENABLE),
+			fflags: 0,
+			data: 0,
+			udata: nil
+		)
 
 		kEvents.append(sockKevent)
 
@@ -227,31 +213,18 @@ final class Server: ServerInterface {
 		else {
 			return
 		}
-		let string = String(cString: UnsafePointer(baseAddress))
+		let fullText = String(cString: UnsafePointer(baseAddress))
 		// Handle the message in order to understand whether is a standard message or a nick change request
-		receivedClientTCPText(string, socket: socket, senderIP: senderIP)
+		sendClientMessage(fullText: fullText, senderIP: senderIP, socket: socket)
 	}
 
 	// MARK: - Send message
 	// Send the message of the client whose socket is clientSocket to all of the other clients
-	 func receivedClientTCPText(_ text: String, socket: Int32, senderIP: String) {
-		guard let messageType = serverTCPCommunicationDelegate?.serverDidReceiveClientTCPText(text, senderIP: senderIP) else {
-			print("Nil communicationDelegate")
-			return
-		}
-
-		switch messageType {
-		case .nicknameChangeRequest(let fullText, let content):
-			sendInformationText(fullText: fullText, content: content)
-		case .text(let fullText, let content, let senderAlias):
-			sendClientText(fullText: fullText, content: content, senderAlias: senderAlias, socket: socket)
-		}
-	}
-
-	func sendClientText(fullText: String, content: String, senderAlias: String, socket: Int32) {
+	func sendClientMessage(fullText: String, senderIP: String, socket: Int32) {
+		let composedText = serverMessageFactory.generateClientMessage(from: fullText, senderIP: senderIP)
 		for event in kEvents where event.ident != UInt(socket) {
 			let fd = event.ident
-			fullText.withCString { cString in
+			composedText.withCString { cString in
 				let messageLength = Int(strlen(cString))
 				let bytes = send(Int32(fd), cString, messageLength, 0)
 				if bytes < 0 {
@@ -261,53 +234,38 @@ final class Server: ServerInterface {
 				}
 			}
 		}
-		serverTCPCommunicationDelegate?.serverDidSendClientText(content, senderAlias: senderAlias)
+		serverTCPCommunicationDelegate?.serverDidSendClientText(fullText, senderIP: senderIP)
 	}
 
 	// Send server own text
-	func sendServerText(_ text: String) {
-		// Check if it's a nickname change request
-		guard let messageType = serverTCPCommunicationDelegate?.serverWantsToSendTCPText(text) else {
-			print("Nil communicationDelegate")
-			return
-		}
+	func sendServerMessage(_ text: String) {
+		let composedText = serverMessageFactory.generateServerMessage(from: text)
 
-		switch messageType {
-		case .text(let fullText, let content, _):
-			for event in kEvents {
-				let fd = event.ident
-
-				fullText.withCString { cString in
-					let messageLength = Int(strlen(cString))
-					let bytes = send(Int32(fd), cString, messageLength, 0)
-					if bytes < 0 {
-						print("Error sending TCP Message")
-					} else {
-						print("Sent by server: \(content)")
-						serverTCPCommunicationDelegate?.serverDidSendText(content)
-					}
-				}
-			}
-		case .nicknameChangeRequest(let fullText, let content):
-			sendInformationText(fullText: fullText, content: content)
-		}
-	}
-
-	// Send information text such as nickname change
-	func sendInformationText(fullText: String, content: String) {
 		for event in kEvents {
 			let fd = event.ident
 
-			fullText.withCString { cString in
+			composedText.withCString { cString in
 				let messageLength = Int(strlen(cString))
 				let bytes = send(Int32(fd), cString, messageLength, 0)
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Sent by server: \(content)")
-					serverTCPCommunicationDelegate?.serverDidSendInformationText(content)
+					print("Sent by server: \(composedText)")
+					serverTCPCommunicationDelegate?.serverDidSendItsText(composedText)
 				}
 			}
 		}
+	}
+
+	func closeAll() {
+		close(udpEventsKQueue)
+		close(incoming_tcp_connections_socket)
+		close(tcpKQueue)
+
+		connectionSockets.forEach {fd, _ in
+			close(fd)
+		}
+
+		kEvents = []
 	}
 }

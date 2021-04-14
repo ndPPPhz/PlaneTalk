@@ -8,7 +8,6 @@
 
 import Foundation
 
-protocol UDPCommunicationDelegate: AnyObject {
-	var discoveryServerString: String { get }
+protocol BroadcastMessagingDelegate: AnyObject {
 	func deviceDidReceiveBroadcastMessage(_ text: String, from sender: String)
 }

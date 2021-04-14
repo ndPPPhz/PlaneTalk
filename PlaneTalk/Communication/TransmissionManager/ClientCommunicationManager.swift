@@ -1,31 +1,40 @@
 //
-//  Client.swift
-//  SendiOS
+//  ClientCommunicationManager.swift
+//  PlaneTalk
 //
-//  Created by Annino De Petra on 20/02/2020.
-//  Copyright © 2020 Annino De Petra. All rights reserved.
+//  Created by Annino De Petra on 14/04/2021.
+//  Copyright © 2021 Annino De Petra. All rights reserved.
 //
 
 import Foundation
 
-protocol ClientInterface {
+
+protocol ClientCommunicationInterface {
 	func startTCPconnectionToServer()
+	func sendTextToServer(_ text: String)
+	func closeCommunication()
 }
 
-final class Client: ClientInterface, NetworkDevice {
-	var ip: String
-	var serverIP: String
-
+final class ClientCommunicationManager: ClientCommunicationInterface {
 	// The kqueue for all the tcp events
-	lazy var tcpEventQueue = kqueue()
+	private lazy var tcpEventQueue = kqueue()
 	// TCP socket with the server
-	var client_tcp_socket_fd: Int32 = socket(AF_INET, SOCK_STREAM, 0)
+	private var client_tcp_socket_fd: Int32 = socket(AF_INET, SOCK_STREAM, 0)
 
-	weak var clientTCPCommunicationDelegate: ClientTCPCommunicationDelegate?
+	private var serverIP: String
+	private let kQueueEventQueue: DispatchQueue
+	private let propagationQueue: DispatchQueue
 
-	init(ip: String, serverIP: String) {
-		self.ip = ip
+	weak var clientCommunicationDelegate: ClientCommunicationDelegate?
+
+	init(
+		serverIP: String,
+		kQueueEventQueue: DispatchQueue = DispatchQueue(label: "com.ndPPPhz.PlaneTalk-clientKQueue", qos: .userInteractive),
+		propagationQueue: DispatchQueue = .main
+	) {
+		self.kQueueEventQueue = kQueueEventQueue
 		self.serverIP = serverIP
+		self.propagationQueue = propagationQueue
 	}
 
 	func startTCPconnectionToServer() {
@@ -44,7 +53,8 @@ final class Client: ClientInterface, NetworkDevice {
 		}
 
 		if connect_return == -1 {
-			print("Connect to the server via TCP failed");
+
+			print("Connect to the server @\(serverIP) via TCP failed");
 			exit(-1)
 		}
 
@@ -77,7 +87,7 @@ final class Client: ClientInterface, NetworkDevice {
 	}
 
 	private func tcpMessagesWatchLoop() {
-		DispatchQueue.global().async { [weak self] in
+		kQueueEventQueue.async { [weak self] in
 			while true {
 				guard let _self = self else { return }
 				var events: [kevent] = Array<kevent>(repeating: kevent(), count: 5)
@@ -115,7 +125,10 @@ final class Client: ClientInterface, NetworkDevice {
 						print("Kevent error")
 					}
 
-					print("Server disconnected")
+					print("Server disconnected. Starting a new search again ...")
+					propagationQueue.async { [weak self] in
+						self?.clientCommunicationDelegate?.clientDidLoseConnectionWithServer()
+					}
 					close(Int32(fd))
 				} else {
 					handleReceivedTCPMessage(socket: Int32(fd))
@@ -144,10 +157,10 @@ final class Client: ClientInterface, NetworkDevice {
 		}
 
 		let string = String(cString: UnsafePointer(baseAddress))
-		clientTCPCommunicationDelegate?.clientDidReceiveTCPText(string)
+		clientCommunicationDelegate?.clientDidReceiveMessage(string)
 	}
 
-	func sendToServerTCP(_ text: String) {
+	func sendTextToServer(_ text: String) {
 		text.withCString { cstr -> Void in
 			var server_tcp_sock_addr = generateTCPSockAddrIn(server_address: serverIP)
 
@@ -162,7 +175,12 @@ final class Client: ClientInterface, NetworkDevice {
 				return
 			}
 			print("Sent to the server: \(text)")
-			clientTCPCommunicationDelegate?.clientDidSendText(text)
+			clientCommunicationDelegate?.clientDidSendMessage(text)
 		}
+	}
+
+	func closeCommunication() {
+		close(tcpEventQueue)
+		close(client_tcp_socket_fd)
 	}
 }

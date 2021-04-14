@@ -31,6 +31,7 @@ final class ChatViewController: UIViewController {
 	private var textBoardView = TextBoardView.instantiateFromNib()
 	private var manager: ManagerInterface?
 
+
 	private var messages: [ChatMessage] = [] {
 		didSet {
 			tableView.reloadDataWithCompletion { [weak self] in
@@ -56,27 +57,38 @@ final class ChatViewController: UIViewController {
 	}
 
 	private func start() {
-		// Find the connected interface
-		guard let connectedInterface = Connector.connect() else {
-			assertionFailure("Error: interface not found")
-			return
+		let manager = CommunicationManager()
+		let broadcastMessageFactory = BroadcastMessageFactory()
+
+		let broadcastManagerFactory : (String) -> BroadcastInterface = { broadcastIP in
+			let broadcastManager = BroadcastManager(broadcastIP: broadcastIP, messageFactory: broadcastMessageFactory)
+			broadcastManager.broadcastMessagingDelegate = manager
+			broadcastManager.grantRoleDelegate = manager
+			return broadcastManager
 		}
 
-		print("Connected to \(connectedInterface.name)")
-		// Create a device object
-		let currentDevice = Device(
-			ip: connectedInterface.ip,
-			broadcastIP: connectedInterface.broadcastIP
-		)
+		let clientCommunicationManagerFactory: (String) -> ClientCommunicationInterface = { serverIP in
+			let clientCommunicationManager = ClientCommunicationManager(serverIP: serverIP)
+			clientCommunicationManager.clientCommunicationDelegate = manager
+			return clientCommunicationManager
+		}
 
-		// Initialise the manager with the currentDevice
-		let manager = Manager(device: currentDevice)
+		let serverCommunicationManagerFactory: (String) -> ServerCommunicationInterface = { serverIP in
+			let serverMessageFactory = ServerMessageFactory(serverIP: serverIP)
+			let serverCommunicationManager = ServerCommunicationManager(
+				serverMessageFactory: serverMessageFactory
+			)
+			serverCommunicationManager.serverTCPCommunicationDelegate = manager
+			return serverCommunicationManager
+		}
+
+		manager.broadcastManagerFactory = broadcastManagerFactory
+		manager.clientCommunicationManagerFactory = clientCommunicationManagerFactory
+		manager.serverCommunicationManagerFactory = serverCommunicationManagerFactory
+		manager.broadcastMessagesInterpreter = broadcastMessageFactory
 		manager.presenter = self
-
-		currentDevice.udpCommunicationDelegate = manager
-		currentDevice.roleGrantDelegate = manager
-
-		manager.allowBroadcastDeviceTransmissionReceptionUDPMessages()
+		
+		try? manager.startCommunication()
 		self.manager = manager
 	}
 

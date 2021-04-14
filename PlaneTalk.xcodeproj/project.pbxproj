@@ -7,19 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6E1DB07D26298ED300D49B7A /* ServerMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1DB07C26298ED300D49B7A /* ServerMessageFactory.swift */; };
+		6E1DB080262991EA00D49B7A /* BroadcastMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1DB07F262991EA00D49B7A /* BroadcastMessageFactory.swift */; };
+		6E6AC0A52624F52900A273B4 /* NetworkInterfaceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E6AC0A42624F52900A273B4 /* NetworkInterfaceType.swift */; };
+		6E8766F62626517500FB80DA /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8766F52626517500FB80DA /* Message.swift */; };
+		6E8766FB2626595500FB80DA /* BroadcastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8766FA2626595500FB80DA /* BroadcastManager.swift */; };
+		6E8766FF26265BF600FB80DA /* ClientCommunicationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8766FE26265BF600FB80DA /* ClientCommunicationManager.swift */; };
+		6E87670426265CF100FB80DA /* ServerCommunicationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87670326265CF100FB80DA /* ServerCommunicationManager.swift */; };
+		6E87670B26265FFD00FB80DA /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E87670A26265FFD00FB80DA /* DeviceType.swift */; };
 		EF37DFEB24354F97009F1E29 /* UIChatTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */; };
 		EF3D9D98241D0DCA009079FC /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D97241D0DCA009079FC /* Device.swift */; };
-		EF3D9D9A241D10FC009079FC /* BroadcastDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */; };
-		EF3D9D9F241D163C009079FC /* UDP.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D9E241D163C009079FC /* UDP.swift */; };
-		EF3D9DA1241D1650009079FC /* ServerTransmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA0241D1650009079FC /* ServerTransmission.swift */; };
-		EF3D9DA3241D1682009079FC /* ClientTransmission.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA2241D1682009079FC /* ClientTransmission.swift */; };
+		EF3D9D9F241D163C009079FC /* BroadcastMessagingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9D9E241D163C009079FC /* BroadcastMessagingDelegate.swift */; };
+		EF3D9DA1241D1650009079FC /* ServerCommunicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA0241D1650009079FC /* ServerCommunicationDelegate.swift */; };
+		EF3D9DA3241D1682009079FC /* ClientCommunicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA2241D1682009079FC /* ClientCommunicationDelegate.swift */; };
 		EF3D9DA7241D6427009079FC /* SocketUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF3D9DA6241D6427009079FC /* SocketUtilities.swift */; };
-		EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585323FEDB4B001020FD /* InterfaceFinder.swift */; };
-		EF50585623FEDC84001020FD /* Interface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585523FEDC84001020FD /* Interface.swift */; };
-		EF50585823FEDEF4001020FD /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585723FEDEF4001020FD /* Server.swift */; };
-		EF50585A23FEDF0C001020FD /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585923FEDF0C001020FD /* Client.swift */; };
-		EF50585C23FEF5C3001020FD /* Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585B23FEF5C3001020FD /* Manager.swift */; };
-		EF50585E23FF0B2B001020FD /* NetworkDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585D23FF0B2B001020FD /* NetworkDevice.swift */; };
+		EF50585423FEDB4B001020FD /* NetworkInterfacesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585323FEDB4B001020FD /* NetworkInterfacesProvider.swift */; };
+		EF50585623FEDC84001020FD /* NetworkInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585523FEDC84001020FD /* NetworkInterface.swift */; };
+		EF50585C23FEF5C3001020FD /* CommunicationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF50585B23FEF5C3001020FD /* CommunicationManager.swift */; };
 		EF5058612400A5A1001020FD /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF5058602400A5A1001020FD /* Utilities.swift */; };
 		EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC023F76403002CB0EE /* AppDelegate.swift */; };
 		EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF884EC223F76403002CB0EE /* SceneDelegate.swift */; };
@@ -31,8 +35,7 @@
 		EF8CBE5E241AB547009AB2D0 /* Reusable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE5D241AB547009AB2D0 /* Reusable.swift */; };
 		EF8CBE60241AB582009AB2D0 /* UITableView+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */; };
 		EF8CBE62241ABDCD009AB2D0 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */; };
-		EF8CBE64241AC1E3009AB2D0 /* MessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */; };
-		EF95F80A2402CDF30002C047 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* Connector.swift */; };
+		EF95F80A2402CDF30002C047 /* NetworkInterfaceConnector.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F8092402CDF30002C047 /* NetworkInterfaceConnector.swift */; };
 		EF95F80C2402D5D20002C047 /* Notification+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F80B2402D5D20002C047 /* Notification+Ext.swift */; };
 		EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF95F82E240309370002C047 /* MessageTableViewCell.swift */; };
 		EF95F831240309370002C047 /* MessageTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EF95F82F240309370002C047 /* MessageTableViewCell.xib */; };
@@ -45,19 +48,23 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6E1DB07C26298ED300D49B7A /* ServerMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerMessageFactory.swift; sourceTree = "<group>"; };
+		6E1DB07F262991EA00D49B7A /* BroadcastMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastMessageFactory.swift; sourceTree = "<group>"; };
+		6E6AC0A42624F52900A273B4 /* NetworkInterfaceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceType.swift; sourceTree = "<group>"; };
+		6E8766F52626517500FB80DA /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		6E8766FA2626595500FB80DA /* BroadcastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastManager.swift; sourceTree = "<group>"; };
+		6E8766FE26265BF600FB80DA /* ClientCommunicationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCommunicationManager.swift; sourceTree = "<group>"; };
+		6E87670326265CF100FB80DA /* ServerCommunicationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicationManager.swift; sourceTree = "<group>"; };
+		6E87670A26265FFD00FB80DA /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIChatTableView.swift; sourceTree = "<group>"; };
 		EF3D9D97241D0DCA009079FC /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
-		EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastDevice.swift; sourceTree = "<group>"; };
-		EF3D9D9E241D163C009079FC /* UDP.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UDP.swift; sourceTree = "<group>"; };
-		EF3D9DA0241D1650009079FC /* ServerTransmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerTransmission.swift; sourceTree = "<group>"; };
-		EF3D9DA2241D1682009079FC /* ClientTransmission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTransmission.swift; sourceTree = "<group>"; };
+		EF3D9D9E241D163C009079FC /* BroadcastMessagingDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastMessagingDelegate.swift; sourceTree = "<group>"; };
+		EF3D9DA0241D1650009079FC /* ServerCommunicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerCommunicationDelegate.swift; sourceTree = "<group>"; };
+		EF3D9DA2241D1682009079FC /* ClientCommunicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCommunicationDelegate.swift; sourceTree = "<group>"; };
 		EF3D9DA6241D6427009079FC /* SocketUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocketUtilities.swift; sourceTree = "<group>"; };
-		EF50585323FEDB4B001020FD /* InterfaceFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceFinder.swift; sourceTree = "<group>"; };
-		EF50585523FEDC84001020FD /* Interface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interface.swift; sourceTree = "<group>"; };
-		EF50585723FEDEF4001020FD /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
-		EF50585923FEDF0C001020FD /* Client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
-		EF50585B23FEF5C3001020FD /* Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manager.swift; sourceTree = "<group>"; };
-		EF50585D23FF0B2B001020FD /* NetworkDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDevice.swift; sourceTree = "<group>"; };
+		EF50585323FEDB4B001020FD /* NetworkInterfacesProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfacesProvider.swift; sourceTree = "<group>"; };
+		EF50585523FEDC84001020FD /* NetworkInterface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterface.swift; sourceTree = "<group>"; };
+		EF50585B23FEF5C3001020FD /* CommunicationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunicationManager.swift; sourceTree = "<group>"; };
 		EF5058602400A5A1001020FD /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		EF884EBD23F76403002CB0EE /* PlaneTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PlaneTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF884EC023F76403002CB0EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -71,8 +78,7 @@
 		EF8CBE5D241AB547009AB2D0 /* Reusable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reusable.swift; sourceTree = "<group>"; };
 		EF8CBE5F241AB582009AB2D0 /* UITableView+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITableView+Ext.swift"; sourceTree = "<group>"; };
 		EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
-		EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFactory.swift; sourceTree = "<group>"; };
-		EF95F8092402CDF30002C047 /* Connector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
+		EF95F8092402CDF30002C047 /* NetworkInterfaceConnector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceConnector.swift; sourceTree = "<group>"; };
 		EF95F80B2402D5D20002C047 /* Notification+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Ext.swift"; sourceTree = "<group>"; };
 		EF95F82E240309370002C047 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		EF95F82F240309370002C047 /* MessageTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageTableViewCell.xib; sourceTree = "<group>"; };
@@ -95,30 +101,51 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		EF3D9D9B241D1603009079FC /* Transmission */ = {
+		6E1DB083262994DE00D49B7A /* MessagesFactory */ = {
 			isa = PBXGroup;
 			children = (
-				EF3D9D9D241D1623009079FC /* TCP */,
-				EF3D9D9C241D161B009079FC /* UDP */,
+				6E1DB07C26298ED300D49B7A /* ServerMessageFactory.swift */,
+				6E1DB07F262991EA00D49B7A /* BroadcastMessageFactory.swift */,
 			);
-			path = Transmission;
+			path = MessagesFactory;
 			sourceTree = "<group>";
 		};
-		EF3D9D9C241D161B009079FC /* UDP */ = {
+		6E1DB0892629D67600D49B7A /* TransmissionManager */ = {
 			isa = PBXGroup;
 			children = (
-				EF3D9D9E241D163C009079FC /* UDP.swift */,
+				6E8766FA2626595500FB80DA /* BroadcastManager.swift */,
+				6E8766FE26265BF600FB80DA /* ClientCommunicationManager.swift */,
+				6E87670326265CF100FB80DA /* ServerCommunicationManager.swift */,
 			);
-			path = UDP;
+			path = TransmissionManager;
 			sourceTree = "<group>";
 		};
-		EF3D9D9D241D1623009079FC /* TCP */ = {
+		6E6AC0A22624F41300A273B4 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				EF3D9DA0241D1650009079FC /* ServerTransmission.swift */,
-				EF3D9DA2241D1682009079FC /* ClientTransmission.swift */,
+				EF50585323FEDB4B001020FD /* NetworkInterfacesProvider.swift */,
+				EF95F8092402CDF30002C047 /* NetworkInterfaceConnector.swift */,
 			);
-			path = TCP;
+			path = Network;
+			sourceTree = "<group>";
+		};
+		6E87670826265E1C00FB80DA /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				6E6AC0A42624F52900A273B4 /* NetworkInterfaceType.swift */,
+				EF50585523FEDC84001020FD /* NetworkInterface.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		EF3D9D9B241D1603009079FC /* Delegate */ = {
+			isa = PBXGroup;
+			children = (
+				EF3D9DA0241D1650009079FC /* ServerCommunicationDelegate.swift */,
+				EF3D9DA2241D1682009079FC /* ClientCommunicationDelegate.swift */,
+				EF3D9D9E241D163C009079FC /* BroadcastMessagingDelegate.swift */,
+			);
+			path = Delegate;
 			sourceTree = "<group>";
 		};
 		EF3D9DA4241D63AF009079FC /* Extensions */ = {
@@ -146,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				EF3D9DA6241D6427009079FC /* SocketUtilities.swift */,
+				EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */,
 				EF5058602400A5A1001020FD /* Utilities.swift */,
 			);
 			path = Utilities;
@@ -154,11 +182,9 @@
 		EF50585F23FF0BEB001020FD /* Devices */ = {
 			isa = PBXGroup;
 			children = (
-				EF50585723FEDEF4001020FD /* Server.swift */,
-				EF50585923FEDF0C001020FD /* Client.swift */,
 				EF3D9D97241D0DCA009079FC /* Device.swift */,
-				EF3D9D99241D10FC009079FC /* BroadcastDevice.swift */,
-				EF50585D23FF0B2B001020FD /* NetworkDevice.swift */,
+				6E87670A26265FFD00FB80DA /* DeviceType.swift */,
+				6E8766F52626517500FB80DA /* Message.swift */,
 			);
 			path = Devices;
 			sourceTree = "<group>";
@@ -186,7 +212,8 @@
 				EF884EC223F76403002CB0EE /* SceneDelegate.swift */,
 				EF884EC423F76403002CB0EE /* ChatViewController.swift */,
 				EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */,
-				EF95F80E2402D7380002C047 /* Controllers */,
+				6E6AC0A22624F41300A273B4 /* Network */,
+				EF95F80E2402D7380002C047 /* Communication */,
 				EF95F8112402E3660002C047 /* Model */,
 				EF95F80D2402D65D0002C047 /* Supporting Files */,
 				EF95F85A2403398F0002C047 /* UI */,
@@ -208,25 +235,22 @@
 			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		EF95F80E2402D7380002C047 /* Controllers */ = {
+		EF95F80E2402D7380002C047 /* Communication */ = {
 			isa = PBXGroup;
 			children = (
-				EF50585323FEDB4B001020FD /* InterfaceFinder.swift */,
-				EF50585B23FEF5C3001020FD /* Manager.swift */,
-				EF8CBE63241AC1E3009AB2D0 /* MessageFactory.swift */,
-				EF95F8092402CDF30002C047 /* Connector.swift */,
+				EF50585B23FEF5C3001020FD /* CommunicationManager.swift */,
+				6E1DB0892629D67600D49B7A /* TransmissionManager */,
+				6E1DB083262994DE00D49B7A /* MessagesFactory */,
 			);
-			path = Controllers;
+			path = Communication;
 			sourceTree = "<group>";
 		};
 		EF95F8112402E3660002C047 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				EF3D9D9B241D1603009079FC /* Transmission */,
+				6E87670826265E1C00FB80DA /* Network */,
+				EF3D9D9B241D1603009079FC /* Delegate */,
 				EF50585F23FF0BEB001020FD /* Devices */,
-				EF50585523FEDC84001020FD /* Interface.swift */,
-				EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */,
-				EF8CBE5B241AB343009AB2D0 /* PlatformUtils.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -234,6 +258,7 @@
 		EF95F85A2403398F0002C047 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */,
 				EF95F82E240309370002C047 /* MessageTableViewCell.swift */,
 				EF95F82F240309370002C047 /* MessageTableViewCell.xib */,
 				EF9C42E0241A858F00564AC2 /* TextBoardView.swift */,
@@ -316,33 +341,36 @@
 			buildActionMask = 2147483647;
 			files = (
 				EF9C42E5241A889000564AC2 /* NibLoadable.swift in Sources */,
+				6E8766FB2626595500FB80DA /* BroadcastManager.swift in Sources */,
 				EF884EC523F76403002CB0EE /* ChatViewController.swift in Sources */,
-				EF95F80A2402CDF30002C047 /* Connector.swift in Sources */,
+				EF95F80A2402CDF30002C047 /* NetworkInterfaceConnector.swift in Sources */,
+				6E6AC0A52624F52900A273B4 /* NetworkInterfaceType.swift in Sources */,
 				EF37DFEB24354F97009F1E29 /* UIChatTableView.swift in Sources */,
-				EF3D9DA3241D1682009079FC /* ClientTransmission.swift in Sources */,
-				EF50585A23FEDF0C001020FD /* Client.swift in Sources */,
-				EF50585623FEDC84001020FD /* Interface.swift in Sources */,
+				6E87670426265CF100FB80DA /* ServerCommunicationManager.swift in Sources */,
+				EF3D9DA3241D1682009079FC /* ClientCommunicationDelegate.swift in Sources */,
+				EF50585623FEDC84001020FD /* NetworkInterface.swift in Sources */,
 				EF8CBE5E241AB547009AB2D0 /* Reusable.swift in Sources */,
 				EF8CBE62241ABDCD009AB2D0 /* ChatMessage.swift in Sources */,
 				EF9C42E9241A89B300564AC2 /* UIView+Ext.swift in Sources */,
-				EF50585E23FF0B2B001020FD /* NetworkDevice.swift in Sources */,
 				EF9C42E1241A858F00564AC2 /* TextBoardView.swift in Sources */,
-				EF3D9D9F241D163C009079FC /* UDP.swift in Sources */,
-				EF50585423FEDB4B001020FD /* InterfaceFinder.swift in Sources */,
-				EF8CBE64241AC1E3009AB2D0 /* MessageFactory.swift in Sources */,
-				EF3D9D9A241D10FC009079FC /* BroadcastDevice.swift in Sources */,
-				EF3D9DA1241D1650009079FC /* ServerTransmission.swift in Sources */,
+				6E8766F62626517500FB80DA /* Message.swift in Sources */,
+				EF3D9D9F241D163C009079FC /* BroadcastMessagingDelegate.swift in Sources */,
+				EF50585423FEDB4B001020FD /* NetworkInterfacesProvider.swift in Sources */,
+				EF3D9DA1241D1650009079FC /* ServerCommunicationDelegate.swift in Sources */,
+				6E1DB080262991EA00D49B7A /* BroadcastMessageFactory.swift in Sources */,
 				EF8CBE60241AB582009AB2D0 /* UITableView+Ext.swift in Sources */,
+				6E1DB07D26298ED300D49B7A /* ServerMessageFactory.swift in Sources */,
 				EF95F830240309370002C047 /* MessageTableViewCell.swift in Sources */,
 				EF884EC123F76403002CB0EE /* AppDelegate.swift in Sources */,
 				EF8CBE5C241AB343009AB2D0 /* PlatformUtils.swift in Sources */,
+				6E8766FF26265BF600FB80DA /* ClientCommunicationManager.swift in Sources */,
 				EF9C42DB241A564F00564AC2 /* ViewDataConfigurable.swift in Sources */,
 				EF95F80C2402D5D20002C047 /* Notification+Ext.swift in Sources */,
 				EF3D9DA7241D6427009079FC /* SocketUtilities.swift in Sources */,
-				EF50585C23FEF5C3001020FD /* Manager.swift in Sources */,
-				EF50585823FEDEF4001020FD /* Server.swift in Sources */,
+				EF50585C23FEF5C3001020FD /* CommunicationManager.swift in Sources */,
 				EF9C42E7241A899C00564AC2 /* Collection+Ext.swift in Sources */,
 				EF5058612400A5A1001020FD /* Utilities.swift in Sources */,
+				6E87670B26265FFD00FB80DA /* DeviceType.swift in Sources */,
 				EF884EC323F76403002CB0EE /* SceneDelegate.swift in Sources */,
 				EF3D9D98241D0DCA009079FC /* Device.swift in Sources */,
 			);

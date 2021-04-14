@@ -8,9 +8,15 @@
 
 import Foundation
 
-final class InterfaceFinder {
-	static func getAvailableInterfaces() -> [Interface] {
-		var availableInterfaces: [Interface] = []
+protocol NetworkInterfacesProviderInterface {
+	/// Fetches Wlan and Bridge ( aka Hotstop ) interfaces if available
+	/// - Returns: An array containing the details of the available interfaces
+	static func getAvailableInterfaces() -> [NetworkInterface]
+}
+
+final class NetworkInterfacesProvider: NetworkInterfacesProviderInterface {
+	static func getAvailableInterfaces() -> [NetworkInterface] {
+		var availableInterfaces: [NetworkInterface] = []
 		let interface_address = ifaddrs()
 
 		// Get all the interfaces
@@ -41,7 +47,7 @@ final class InterfaceFinder {
 
 					let interface = String(cString: interfaceName)
 
-					if interface.contains(Constant.Interface.hotspot) || interface == Constant.Interface.wlan {
+					if interface.contains(NetworkInterfaceType.bridge.rawValue) || interface == NetworkInterfaceType.wlan.rawValue {
 						guard
 							let destinationAddress = UnsafeRawPointer(interfaceAddress.ifa_dstaddr)?.bindMemory(to: sockaddr_in.self, capacity: 1),
 							let myAddress = UnsafeRawPointer(interfaceAddress.ifa_addr)?.bindMemory(to: sockaddr_in.self, capacity: 1)
@@ -51,7 +57,7 @@ final class InterfaceFinder {
 						let broadcastIPString = String(cString: inet_ntoa(destinationAddress.pointee.sin_addr))
 						let currentDeviceIPString = String(cString: inet_ntoa(myAddress.pointee.sin_addr))
 
-						let newInterface = Interface(name: interface, ip: currentDeviceIPString, broadcastIP: broadcastIPString)
+						let newInterface = NetworkInterface(name: interface, ip: currentDeviceIPString, broadcastIP: broadcastIPString)
 						availableInterfaces.append(newInterface)
 					}
 				} while interfaceAddress.ifa_next != nil

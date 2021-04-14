@@ -13,9 +13,3 @@ struct ChatMessage {
 	let senderAlias: String
 	let isMyMessage: Bool
 }
-
-enum MessageType {
-	// Full text refers to the all protocol string sent whereas the content is the actualy typed text
-	case text(fullText: String, content: String, senderAlias: String)
-	case nicknameChangeRequest(fullText: String, content: String)
-}
