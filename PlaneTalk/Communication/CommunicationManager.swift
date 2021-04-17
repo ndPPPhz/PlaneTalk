@@ -13,8 +13,14 @@ protocol GrantRoleDelegate: AnyObject {
 }
 
 protocol ManagerInterface {
-	func startCommunication() throws
+	func enableCommunication() throws
+	func searchServer()
+	func connectToServer()
 	func send(_ message: String)
+}
+
+protocol ManagerDelegate: AnyObject {
+	func managerDidFindServer(_ serverIP: String)
 }
 
 final class CommunicationManager: ManagerInterface {
@@ -23,7 +29,7 @@ final class CommunicationManager: ManagerInterface {
 		static let serverResponse = "CHAT-SERVER-RESPONSE"
 		static let separator = "-/-"
 	}
-	
+
 	enum CommunicationManagerError: Error {
 		case broadcastNotAvailable
 	}
@@ -32,14 +38,13 @@ final class CommunicationManager: ManagerInterface {
 	private var currentDevice: Device?
 	private var serverIP: String?
 
-	weak var presenter: MessagePresenter?
-
 	private let networkInterfaceConnector: InterfaceConnector
-	private let propagationQueue: DispatchQueue
 
 	private var broadcastManager: BroadcastInterface?
 	private var clientCommunicationManager: ClientCommunicationInterface?
 	private var serverCommunicationManager: ServerCommunicationInterface?
+
+	weak var delegate: ManagerDelegate?
 
 	var broadcastManagerFactory: ((String) -> BroadcastInterface)?
 	var clientCommunicationManagerFactory: ((String) -> ClientCommunicationInterface)?
@@ -47,16 +52,14 @@ final class CommunicationManager: ManagerInterface {
 	var broadcastMessagesInterpreter: BroadcastMessageInterpreter?
 
 	init(
-		networkInterfaceConnector: InterfaceConnector = NetworkInterfaceConnector(),
-		propagationQueue: DispatchQueue = .main
+		networkInterfaceConnector: InterfaceConnector = NetworkInterfaceConnector()
 	) {
 		self.networkInterfaceConnector = networkInterfaceConnector
-		self.propagationQueue = propagationQueue
 		NotificationCenter.default.addObserver(self, selector: #selector(closeAll), name: Notification.Name("applicationWillTerminate"), object: nil)
 	}
 
 	// MARK: - ManagerInterface
-	func startCommunication() throws {
+	func enableCommunication() throws {
 		// Find an interface and connect to it
 		let connectedInterface = try networkInterfaceConnector.connect()
 		print("Connected to \(connectedInterface.name)")
@@ -72,8 +75,29 @@ final class CommunicationManager: ManagerInterface {
 		self.currentDevice = currentDevice
 
 		broadcastManager.enableReceptionAndTransmissionUDPMessages()
-		broadcastManager.findServer()
 		self.broadcastManager = broadcastManager
+	}
+
+	func searchServer() {
+		broadcastManager?.findServer()
+	}
+
+	func connectToServer() {
+		guard let serverIP = serverIP else {
+			print("Server not found. Execute a search first")
+			return
+		}
+		// Unbind from the UDP port and connect to the server via TCP
+		broadcastManager?.closeUDPSockets()
+
+		guard let clientCommunicationManager = clientCommunicationManagerFactory?(serverIP) else {
+			assertionFailure("Unable to initialise a client communication manager")
+			return
+		}
+
+		clientCommunicationManager.startTCPconnectionToServer()
+		print("Connected to the server")
+		self.clientCommunicationManager = clientCommunicationManager
 	}
 
 	func send(_ message: String) {
@@ -86,12 +110,6 @@ final class CommunicationManager: ManagerInterface {
 	}
 
 	// MARK: - Utilities
-	private func presentMessage(chatMessage: ChatMessage) {
-		propagationQueue.async { [weak self] in
-			self?.presenter?.show(chatMessage: chatMessage)
-		}
-	}
-
 	@objc func closeAll() {
 		broadcastManager?.closeUDPSockets()
 		clientCommunicationManager?.closeCommunication()
@@ -130,7 +148,7 @@ extension CommunicationManager: BroadcastMessagingDelegate {
 			let broadcastMessageType = type(of: broadcastMessagesInterpreter).isValidBroadcastText(text),
 			broadcastMessageType == .serverDiscovery
 		else {
-			assertionFailure("Server has received an unknown message \(text) from: \(senderIP)")
+			print("Server has received an unknown message \(text) from: \(senderIP)")
 			return
 		}
 
@@ -150,7 +168,7 @@ extension CommunicationManager: BroadcastMessagingDelegate {
 			let broadcastMessageType = type(of: broadcastMessagesInterpreter).isValidBroadcastText(text),
 			broadcastMessageType == .serverResponse
 		else {
-			assertionFailure("Server has received an unknown message \(text) from: \(senderIP)")
+			print("Server has received an unknown message \(text) from: \(senderIP)")
 			return
 		}
 
@@ -162,53 +180,12 @@ extension CommunicationManager: BroadcastMessagingDelegate {
 		// Save the server IP
 		serverIP = senderIP
 		print("Found out a server @ " + senderIP)
-
-		// Unbind from the UDP port and connect to the server via TCP
-		broadcastManager?.closeUDPSockets()
-		deviceType = .client
-
-		guard let clientCommunicationManager = clientCommunicationManagerFactory?(senderIP) else {
-			assertionFailure("Unable to initialise a client communication manager")
-			return
-		}
-
-		clientCommunicationManager.startTCPconnectionToServer()
-		self.clientCommunicationManager = clientCommunicationManager
-	}
-}
-
-// MARK: - ServerCommunicationDelegate
-extension CommunicationManager: ServerCommunicationDelegate {
-	// Server did send its text
-	func serverDidSendItsText(_ text: String) {
-		let senderAndText = text.components(separatedBy: Constant.separator)
-		let chatMessage = ChatMessage(text: senderAndText[1], senderAlias: "Me", isMyMessage: true)
-		presentMessage(chatMessage: chatMessage)
-	}
-
-	// Server did send a client text
-	func serverDidSendClientText(_ text: String, senderIP: String) {
-		print("Showing \(text)")
-		let chatMessage = ChatMessage(text: text, senderAlias: senderIP, isMyMessage: false)
-		presentMessage(chatMessage: chatMessage)
+		delegate?.managerDidFindServer(senderIP)
 	}
 }
 
 // MARK: - ClientCommunicationDelegate
-extension CommunicationManager: ClientCommunicationDelegate {
-	func clientDidReceiveMessage(_ text: String) {
-		let senderAndText = text.components(separatedBy: Constant.separator)
-		let sender = senderAndText[0]
-		let text = senderAndText[1]
-		let chatMessage = ChatMessage(text: text, senderAlias: sender, isMyMessage: false)
-		presentMessage(chatMessage: chatMessage)
-	}
-
-	func clientDidSendMessage(_ text: String) {
-		let chatMessage = ChatMessage(text: text, senderAlias: "Me", isMyMessage: true)
-		presentMessage(chatMessage: chatMessage)
-	}
-
+extension CommunicationManager: ClientConnectionDelegate {
 	func clientDidLoseConnectionWithServer() {
 		clientCommunicationManager = nil
 		broadcastManager = nil
@@ -217,7 +194,7 @@ extension CommunicationManager: ClientCommunicationDelegate {
 		
 		do {
 			print("Retrying start communication")
-			try startCommunication()
+			try enableCommunication()
 		} catch {
 			print("Unable to re-establish a connection. Error: \(error.localizedDescription)")
 		}

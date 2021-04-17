@@ -11,5 +11,8 @@ import Foundation
 protocol ClientCommunicationDelegate: AnyObject {
 	func clientDidReceiveMessage(_ text: String)
 	func clientDidSendMessage(_ text: String)
+}
+
+protocol ClientConnectionDelegate: AnyObject {
 	func clientDidLoseConnectionWithServer()
 }

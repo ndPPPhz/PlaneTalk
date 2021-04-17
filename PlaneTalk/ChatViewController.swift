@@ -8,10 +8,6 @@
 
 import UIKit
 
-protocol MessagePresenter: AnyObject {
-	func show(chatMessage: ChatMessage)
-}
-
 final class ChatViewController: UIViewController {
 	private enum Constant {
 		static let navigatioBarBackgroundColor = UIColor(white: 0.96, alpha: 1)
@@ -28,9 +24,20 @@ final class ChatViewController: UIViewController {
 		}
 	}
 
-	private var textBoardView = TextBoardView.instantiateFromNib()
-	private var manager: ManagerInterface?
+	@IBOutlet private var overlayView: UIView!
+	@IBOutlet weak var connectViewContainerView: UIView! {
+		didSet {
+			connectView.embed(into: connectViewContainerView)
+		}
+	}
 
+	private lazy var connectView: ConnectView = {
+		let connectView = UINib(nibName: "ConnectView", bundle: .main).instantiate(withOwner: nil, options: nil).first as! ConnectView
+		return connectView
+	}()
+
+	private var textBoardView = TextBoardView.instantiateFromNib()
+	private var viewModel: ChatViewModelInterface?
 
 	private var messages: [ChatMessage] = [] {
 		didSet {
@@ -60,6 +67,8 @@ final class ChatViewController: UIViewController {
 		let manager = CommunicationManager()
 		let broadcastMessageFactory = BroadcastMessageFactory()
 
+		let chatViewModel = ChatViewModel(manager: manager)
+
 		let broadcastManagerFactory : (String) -> BroadcastInterface = { broadcastIP in
 			let broadcastManager = BroadcastManager(broadcastIP: broadcastIP, messageFactory: broadcastMessageFactory)
 			broadcastManager.broadcastMessagingDelegate = manager
@@ -69,7 +78,8 @@ final class ChatViewController: UIViewController {
 
 		let clientCommunicationManagerFactory: (String) -> ClientCommunicationInterface = { serverIP in
 			let clientCommunicationManager = ClientCommunicationManager(serverIP: serverIP)
-			clientCommunicationManager.clientCommunicationDelegate = manager
+			clientCommunicationManager.clientCommunicationDelegate = chatViewModel
+			clientCommunicationManager.clientConnectionDelegate = manager
 			return clientCommunicationManager
 		}
 
@@ -78,7 +88,7 @@ final class ChatViewController: UIViewController {
 			let serverCommunicationManager = ServerCommunicationManager(
 				serverMessageFactory: serverMessageFactory
 			)
-			serverCommunicationManager.serverTCPCommunicationDelegate = manager
+			serverCommunicationManager.serverTCPCommunicationDelegate = chatViewModel
 			return serverCommunicationManager
 		}
 
@@ -86,10 +96,13 @@ final class ChatViewController: UIViewController {
 		manager.clientCommunicationManagerFactory = clientCommunicationManagerFactory
 		manager.serverCommunicationManagerFactory = serverCommunicationManagerFactory
 		manager.broadcastMessagesInterpreter = broadcastMessageFactory
-		manager.presenter = self
+		manager.delegate = chatViewModel
+
+		chatViewModel.enableCommunication()
+		chatViewModel.presenter = self
+		chatViewModel.delegate = self
 		
-		try? manager.startCommunication()
-		self.manager = manager
+		viewModel = chatViewModel
 	}
 
 	// MARK: - Utilities
@@ -138,6 +151,38 @@ final class ChatViewController: UIViewController {
 
 		view.backgroundColor = Constant.viewBackgroundColor
 		navigationController?.navigationBar.backgroundColor = Constant.navigatioBarBackgroundColor
+
+		let searchButtonViewData = ConnectView.ViewData.ButtonViewData(
+			title: "Search server",
+			color: .white,
+			backgroundColor: .init(red: 32/255, green: 99/255, blue: 155/255, alpha: 1),
+			tapHanlder: { [weak self] in
+				self?.connectView.showActivityIndicator(true)
+				self?.viewModel?.searchServer()
+			}
+		)
+
+		let serverButtonViewData = ConnectView.ViewData.ButtonViewData(
+			title: "Become server",
+			color: .white,
+			backgroundColor: .init(red: 32/255, green: 99/255, blue: 155/255, alpha: 1),
+			tapHanlder: { [weak self] in
+				self?.viewModel?.askServerPermissions()
+				self?.hideOverlay()
+			}
+		)
+
+		connectView.configure(
+			with: .init(
+				searchButtonViewData: searchButtonViewData,
+				serverButtonViewData: serverButtonViewData
+			)
+		)
+	}
+
+	private func hideOverlay() {
+		overlayView.isHidden = true
+		connectViewContainerView.isHidden = true
 	}
 
 	@objc private func didTapOnTableview() {
@@ -163,6 +208,14 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 	}
 }
 
+extension ChatViewController: ChatViewModelDelegate {
+	func didFindServer() {
+		connectView.showActivityIndicator(false)
+		hideOverlay()
+		viewModel?.connectToServer()
+	}
+}
+
 extension ChatViewController: MessagePresenter {
 	func show(chatMessage: ChatMessage) {
 		textBoardView.clearTextfield()
@@ -172,7 +225,7 @@ extension ChatViewController: MessagePresenter {
 
 extension ChatViewController: TextBoardViewDelegate {
 	func textBoard(_ textBoard: TextBoardView, didPressSendButtonWith text: String) {
-		manager?.send(text)
+		viewModel?.send(text)
 		view.endEditing(true)
 	}
 }

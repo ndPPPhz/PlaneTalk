@@ -206,7 +206,7 @@ final class ServerCommunicationManager: ServerCommunicationInterface {
 		let rawPointer = UnsafeMutableRawPointer(receivedStringBuffer.baseAddress)
 
 		let read_return = recv(socket, rawPointer, 65536, 0)
-
+		// TODO Limit string length
 		guard
 			let baseAddress = receivedStringBuffer.baseAddress,
 			read_return > 0

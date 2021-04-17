@@ -26,6 +26,7 @@ final class ClientCommunicationManager: ClientCommunicationInterface {
 	private let propagationQueue: DispatchQueue
 
 	weak var clientCommunicationDelegate: ClientCommunicationDelegate?
+	weak var clientConnectionDelegate: ClientConnectionDelegate?
 
 	init(
 		serverIP: String,
@@ -127,7 +128,7 @@ final class ClientCommunicationManager: ClientCommunicationInterface {
 
 					print("Server disconnected. Starting a new search again ...")
 					propagationQueue.async { [weak self] in
-						self?.clientCommunicationDelegate?.clientDidLoseConnectionWithServer()
+						self?.clientConnectionDelegate?.clientDidLoseConnectionWithServer()
 					}
 					close(Int32(fd))
 				} else {

@@ -212,9 +212,6 @@ final class BroadcastManager: BroadcastInterface {
 					return
 				}
 				print("Sent \(serverDiscoveryString). Searching a server nearby")
-				propagationQueue.asyncAfter(deadline: .now() + 3) { [weak self] in
-					self?.grantRoleDelegate?.deviceClaimingServerPermission()
-				}
 			}
 		}
 	}
