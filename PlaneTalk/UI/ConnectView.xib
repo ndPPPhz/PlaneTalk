@@ -14,14 +14,14 @@
             <rect key="frame" x="0.0" y="0.0" width="257" height="247"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to PlaneTalk" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LbD-R8-DIk">
-                    <rect key="frame" x="54" y="12" width="149" height="18"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to PlaneTalk" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LbD-R8-DIk">
+                    <rect key="frame" x="52.5" y="18" width="152.5" height="18"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="15"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NVo-YW-7py">
-                    <rect key="frame" x="25.5" y="193" width="206" height="36"/>
+                    <rect key="frame" x="18" y="193" width="221" height="36"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="SxT-0i-Ude"/>
                     </constraints>
@@ -29,7 +29,7 @@
                     <state key="normal" title="Become server"/>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C0S-Q9-Vb0">
-                    <rect key="frame" x="25.5" y="145" width="206" height="36"/>
+                    <rect key="frame" x="18" y="139" width="221" height="36"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="36" id="ABl-Zo-9Bp"/>
                     </constraints>
@@ -37,10 +37,10 @@
                     <state key="normal" title="Search Server"/>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zT4-Rl-rXR">
-                    <rect key="frame" x="118.5" y="36" width="20" height="103"/>
+                    <rect key="frame" x="118.5" y="42" width="20" height="91"/>
                     <subviews>
                         <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="GgV-Yg-heg">
-                            <rect key="frame" x="0.0" y="41.5" width="20" height="20"/>
+                            <rect key="frame" x="0.0" y="35.5" width="20" height="20"/>
                         </activityIndicatorView>
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -53,14 +53,17 @@
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
+                <constraint firstItem="NVo-YW-7py" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="18" id="4pO-25-39X"/>
+                <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="LbD-R8-DIk" secondAttribute="trailing" constant="18" id="7wz-QA-Kdv"/>
                 <constraint firstAttribute="bottom" secondItem="NVo-YW-7py" secondAttribute="bottom" constant="18" id="K6U-HY-VwC"/>
-                <constraint firstItem="LbD-R8-DIk" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="12" id="RDk-CQ-vbB"/>
+                <constraint firstAttribute="trailing" secondItem="NVo-YW-7py" secondAttribute="trailing" constant="18" id="KWL-WC-XOV"/>
+                <constraint firstItem="LbD-R8-DIk" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="18" id="RDk-CQ-vbB"/>
                 <constraint firstItem="NVo-YW-7py" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="VPR-ef-Ka7"/>
                 <constraint firstItem="zT4-Rl-rXR" firstAttribute="top" secondItem="LbD-R8-DIk" secondAttribute="bottom" constant="6" id="Vn5-SN-GeA"/>
-                <constraint firstItem="NVo-YW-7py" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.8" id="WVp-4L-bTI"/>
                 <constraint firstItem="LbD-R8-DIk" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="cMn-Ru-Ra4"/>
                 <constraint firstItem="C0S-Q9-Vb0" firstAttribute="centerX" secondItem="NVo-YW-7py" secondAttribute="centerX" id="sPy-Sn-krz"/>
-                <constraint firstItem="NVo-YW-7py" firstAttribute="top" secondItem="C0S-Q9-Vb0" secondAttribute="bottom" constant="12" id="u2E-MZ-jdc"/>
+                <constraint firstItem="LbD-R8-DIk" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="leading" constant="18" id="sif-jD-MCB"/>
+                <constraint firstItem="NVo-YW-7py" firstAttribute="top" secondItem="C0S-Q9-Vb0" secondAttribute="bottom" constant="18" id="u2E-MZ-jdc"/>
                 <constraint firstItem="zT4-Rl-rXR" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="w4h-fx-jU6"/>
                 <constraint firstItem="C0S-Q9-Vb0" firstAttribute="width" secondItem="NVo-YW-7py" secondAttribute="width" id="xFs-7r-Zam"/>
                 <constraint firstItem="C0S-Q9-Vb0" firstAttribute="top" secondItem="zT4-Rl-rXR" secondAttribute="bottom" constant="6" id="xJN-5q-bPG"/>
@@ -71,6 +74,7 @@
             <connections>
                 <outlet property="activityIndicator" destination="GgV-Yg-heg" id="FYL-tW-Kks"/>
                 <outlet property="becomeServerButton" destination="NVo-YW-7py" id="PyB-M1-md5"/>
+                <outlet property="mainLabel" destination="LbD-R8-DIk" id="1eE-qb-VRw"/>
                 <outlet property="searchServerButton" destination="C0S-Q9-Vb0" id="hpe-SX-kPX"/>
             </connections>
             <point key="canvasLocation" x="-55.797101449275367" y="-129.57589285714286"/>

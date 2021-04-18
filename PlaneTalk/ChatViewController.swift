@@ -13,7 +13,7 @@ final class ChatViewController: UIViewController {
 		static let navigatioBarBackgroundColor = UIColor(white: 0.96, alpha: 1)
 		static let keyboardGap: CGFloat = 38
 		static let viewBackgroundColor = UIColor(r: 246, g: 245, b: 246)
-		static let cornerRadiusRatio: CGFloat = 0.08
+		static let cornerRadiusRatio: CGFloat = 0.02
 	}
 
 	@IBOutlet private var tableView: UIChatTableView!
@@ -157,6 +157,11 @@ final class ChatViewController: UIViewController {
 		view.backgroundColor = Constant.viewBackgroundColor
 		navigationController?.navigationBar.backgroundColor = Constant.navigatioBarBackgroundColor
 
+		setupOverlay(title: "Welcome to PlaneTalk")
+		showOverlay()
+	}
+
+	private func setupOverlay(title: String) {
 		let searchButtonViewData = ConnectView.ViewData.ButtonViewData(
 			title: "Search server",
 			color: .white,
@@ -179,10 +184,18 @@ final class ChatViewController: UIViewController {
 
 		connectView.configure(
 			with: .init(
+				title: title,
 				searchButtonViewData: searchButtonViewData,
 				serverButtonViewData: serverButtonViewData
 			)
 		)
+	}
+
+	private func showOverlay() {
+		overlayView.alpha = 1
+		connectViewContainerView.alpha = 1
+		overlayView.isHidden = false
+		connectViewContainerView.isHidden = false
 	}
 
 	private func hideOverlay() {
@@ -224,6 +237,13 @@ extension ChatViewController: UITableViewDelegate, UITableViewDataSource {
 }
 
 extension ChatViewController: ChatViewModelDelegate {
+	func clientDidLeave() {
+		showOverlay()
+
+		setupOverlay(title: "You disconnected")
+		viewModel?.enableCommunication()
+	}
+
 	func didFindServer() {
 		connectView.showActivityIndicator(false)
 		hideOverlay()

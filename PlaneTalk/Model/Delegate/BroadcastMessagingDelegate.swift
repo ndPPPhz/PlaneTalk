@@ -10,4 +10,5 @@ import Foundation
 
 protocol BroadcastMessagingDelegate: AnyObject {
 	func deviceDidReceiveBroadcastMessage(_ text: String, from sender: String)
+	func deviceDidCloseBroadcastSocket()
 }

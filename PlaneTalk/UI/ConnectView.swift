@@ -25,10 +25,12 @@ final class ConnectView: UIView, ViewDataConfigurable, NibLoadable {
 			var tapHanlder: (() -> Void)?
 		}
 
+		var title: String
 		var searchButtonViewData: ButtonViewData
 		var serverButtonViewData: ButtonViewData
 	}
 
+	@IBOutlet private var mainLabel: UILabel!
 	@IBOutlet private var searchServerButton: UIButton!
 	@IBOutlet private var activityIndicator: UIActivityIndicatorView!
 	@IBOutlet private var becomeServerButton: UIButton!
@@ -50,6 +52,8 @@ final class ConnectView: UIView, ViewDataConfigurable, NibLoadable {
 		becomeServerButton.setTitleColor(serverButtonViewData.color, for: .normal)
 		becomeServerButton.addTarget(self, action: #selector(didTapServerButton), for: .primaryActionTriggered)
 		serverActionHandler = serverButtonViewData.tapHanlder
+
+		mainLabel.text = viewData.title
 	}
 
 	override func layoutSubviews() {

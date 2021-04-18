@@ -36,10 +36,10 @@
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lnw-Yw-Iod">
-                                <rect key="frame" x="62" y="308.5" width="290" height="282"/>
+                                <rect key="frame" x="62" y="304.5" width="290" height="290"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="lnw-Yw-Iod" secondAttribute="height" multiplier="35:34" id="YJc-zj-7pd"/>
+                                    <constraint firstAttribute="width" secondItem="lnw-Yw-Iod" secondAttribute="height" multiplier="34:34" id="YJc-zj-7pd"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" placeholderIntrinsicWidth="414" placeholderIntrinsicHeight="50" translatesAutoresizingMaskIntoConstraints="NO" id="TvX-CB-EWj">

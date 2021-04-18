@@ -109,6 +109,7 @@ final class BroadcastManager: BroadcastInterface {
 					for i in 0..<status {
 						if (events[Int(i)].flags & UInt16(EV_EOF)) == EV_EOF {
 							print("The socket (\(_self.udp_reception_message_socket)) has been closed.")
+							_self.broadcastMessagingDelegate?.deviceDidCloseBroadcastSocket()
 							return
 						}
 
@@ -139,7 +140,7 @@ final class BroadcastManager: BroadcastInterface {
 					}
 				} else {
 					print("Kqueue error: \(String(cString: strerror(errno)))")
-					break
+					return
 				}
 			}
 		}

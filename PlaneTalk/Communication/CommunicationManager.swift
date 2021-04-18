@@ -21,6 +21,7 @@ protocol ManagerInterface {
 
 protocol ManagerDelegate: AnyObject {
 	func managerDidFindServer(_ serverIP: String)
+	func clientDidLeave()
 }
 
 final class CommunicationManager: ManagerInterface {
@@ -137,6 +138,11 @@ extension CommunicationManager: BroadcastMessagingDelegate {
 		}
 	}
 
+	func deviceDidCloseBroadcastSocket() {
+		broadcastManager?.closeUDPSockets()
+		broadcastManager = nil
+	}
+
 	// Server has received a client message
 	private func serverHasReceivedBroadcastText(_ text: String, serverIP: String, senderIP: String) {
 		guard let broadcastMessagesInterpreter = broadcastMessagesInterpreter else {
@@ -168,7 +174,7 @@ extension CommunicationManager: BroadcastMessagingDelegate {
 			let broadcastMessageType = type(of: broadcastMessagesInterpreter).isValidBroadcastText(text),
 			broadcastMessageType == .serverResponse
 		else {
-			print("Server has received an unknown message \(text) from: \(senderIP)")
+			print("Client has received an unknown message \(text) from: \(senderIP)")
 			return
 		}
 
@@ -187,17 +193,12 @@ extension CommunicationManager: BroadcastMessagingDelegate {
 // MARK: - ClientCommunicationDelegate
 extension CommunicationManager: ClientConnectionDelegate {
 	func clientDidLoseConnectionWithServer() {
+		clientCommunicationManager?.closeCommunication()
 		clientCommunicationManager = nil
 		broadcastManager = nil
 		serverIP = nil
 		currentDevice = nil
-		
-		do {
-			print("Retrying start communication")
-			try enableCommunication()
-		} catch {
-			print("Unable to re-establish a connection. Error: \(error.localizedDescription)")
-		}
+		delegate?.clientDidLeave()
 	}
 }
 

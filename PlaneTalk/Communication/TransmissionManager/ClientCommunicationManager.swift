@@ -126,7 +126,7 @@ final class ClientCommunicationManager: ClientCommunicationInterface {
 						print("Kevent error")
 					}
 
-					print("Server disconnected. Starting a new search again ...")
+					print("Connection lost ...")
 					propagationQueue.async { [weak self] in
 						self?.clientConnectionDelegate?.clientDidLoseConnectionWithServer()
 					}
@@ -136,9 +136,8 @@ final class ClientCommunicationManager: ClientCommunicationInterface {
 				}
 			}
 		default:
-			print("Error reading kevent")
-			close(socketKQueue)
-			exit(EXIT_FAILURE)
+			print("Kqueue error: \(String(cString: strerror(errno)))")
+			return
 		}
 	}
 

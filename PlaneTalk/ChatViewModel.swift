@@ -22,6 +22,7 @@ protocol MessagePresenter: AnyObject {
 
 protocol ChatViewModelDelegate: AnyObject {
 	func didFindServer()
+	func clientDidLeave()
 }
 
 final class ChatViewModel: ChatViewModelInterface {
@@ -70,6 +71,10 @@ final class ChatViewModel: ChatViewModelInterface {
 extension ChatViewModel: ManagerDelegate {
 	func managerDidFindServer(_ serverIP: String) {
 		delegate?.didFindServer()
+	}
+
+	func clientDidLeave() {
+		delegate?.clientDidLeave()
 	}
 }
 
