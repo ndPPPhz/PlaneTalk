@@ -8,7 +8,11 @@
 
 import UIKit
 
-final class ConnectView: UIView, ViewDataConfigurable {
+final class ConnectView: UIView, ViewDataConfigurable, NibLoadable {
+	private enum Constant {
+		static let cornerRadiusRatio: CGFloat = 0.08
+	}
+
 	struct ViewData: Equatable {
 		struct ButtonViewData: Equatable {
 			static func == (lhs: ConnectView.ViewData.ButtonViewData, rhs: ConnectView.ViewData.ButtonViewData) -> Bool {
@@ -46,6 +50,15 @@ final class ConnectView: UIView, ViewDataConfigurable {
 		becomeServerButton.setTitleColor(serverButtonViewData.color, for: .normal)
 		becomeServerButton.addTarget(self, action: #selector(didTapServerButton), for: .primaryActionTriggered)
 		serverActionHandler = serverButtonViewData.tapHanlder
+	}
+
+	override func layoutSubviews() {
+		super.layoutSubviews()
+
+		searchServerButton.layer.cornerRadius = searchServerButton.frame.height * Constant.cornerRadiusRatio
+		searchServerButton.layer.masksToBounds = true
+		becomeServerButton.layer.cornerRadius = searchServerButton.frame.height * Constant.cornerRadiusRatio
+		becomeServerButton.layer.masksToBounds = true
 	}
 
 	func showActivityIndicator(_ shouldShow: Bool) {

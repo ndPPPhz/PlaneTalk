@@ -11,16 +11,13 @@ import UIKit
 final class MessageTableViewCell: UITableViewCell, NibLoadable {
 	enum Constant {
 		static let labelMargin: CGFloat = 24
-		static let outgoingMessageBubbleColor = UIColor(red: 70/255, green: 181/255, blue: 85/255, alpha: 1)
-		static let incomingMessageBubbleColor = UIColor(white: 0.972, alpha: 1)
-		static let outgoingMessageTextColor = UIColor.white
-		static let incomingMessageTextColor = UIColor.black
+		static let cornerRadiusRatio: CGFloat = 0.08
 	}
 
-	@IBOutlet var senderLabel: UILabel!
+	@IBOutlet private var senderLabel: UILabel!
 	@IBOutlet private var messageLabel: UILabel!
 	@IBOutlet private var messageLabelLeadingConstraint: NSLayoutConstraint!
-	@IBOutlet private  var senderLabelTopConstraint: NSLayoutConstraint!
+	@IBOutlet private var senderLabelTopConstraint: NSLayoutConstraint!
 	@IBOutlet private var messageLabelBottomConstraint: NSLayoutConstraint!
 	@IBOutlet private var messageLabelTrailingConstraint: NSLayoutConstraint!
 
@@ -50,9 +47,12 @@ final class MessageTableViewCell: UITableViewCell, NibLoadable {
 
 	override func layoutSubviews() {
 		super.layoutSubviews()
-		messageBubbleView.layer.cornerRadius = frame.height * 0.08
+		messageBubbleView.layer.cornerRadius = frame.height * Constant.cornerRadiusRatio
 		if senderLabel.intrinsicContentSize.width > messageLabel.intrinsicContentSize.width {
-			messageBubbleView.trailingAnchor.constraint(equalTo: senderLabel.trailingAnchor, constant: Constant.labelMargin / 2).isActive = true
+			messageBubbleView.trailingAnchor.constraint(
+				equalTo: senderLabel.trailingAnchor,
+				constant: Constant.labelMargin / 2
+			).isActive = true
 		}
 	}
 }

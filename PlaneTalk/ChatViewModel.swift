@@ -78,14 +78,14 @@ extension ChatViewModel: ServerCommunicationDelegate {
 	// Server did send its text
 	func serverDidSendItsText(_ text: String) {
 		let senderAndText = text.components(separatedBy: Constant.separator)
-		let chatMessage = ChatMessage(text: senderAndText[1], senderAlias: "Me", isMyMessage: true)
+		let chatMessage = ChatMessage(text: senderAndText[1], senderAlias: "Me", isSentByMe: true)
 		presentMessage(chatMessage: chatMessage)
 	}
 
 	// Server did send a client text
 	func serverDidSendClientText(_ text: String, senderIP: String) {
 		print("Showing \(text)")
-		let chatMessage = ChatMessage(text: text, senderAlias: senderIP, isMyMessage: false)
+		let chatMessage = ChatMessage(text: text, senderAlias: senderIP, isSentByMe: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 }
@@ -95,12 +95,12 @@ extension ChatViewModel: ClientCommunicationDelegate {
 		let senderAndText = text.components(separatedBy: Constant.separator)
 		let sender = senderAndText[0]
 		let text = senderAndText[1]
-		let chatMessage = ChatMessage(text: text, senderAlias: sender, isMyMessage: false)
+		let chatMessage = ChatMessage(text: text, senderAlias: sender, isSentByMe: false)
 		presentMessage(chatMessage: chatMessage)
 	}
 
 	func clientDidSendMessage(_ text: String) {
-		let chatMessage = ChatMessage(text: text, senderAlias: "Me", isMyMessage: true)
+		let chatMessage = ChatMessage(text: text, senderAlias: "Me", isSentByMe: true)
 		presentMessage(chatMessage: chatMessage)
 	}
 

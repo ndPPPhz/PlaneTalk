@@ -11,5 +11,5 @@ import Foundation
 struct ChatMessage {
 	let text: String
 	let senderAlias: String
-	let isMyMessage: Bool
+	let isSentByMe: Bool
 }

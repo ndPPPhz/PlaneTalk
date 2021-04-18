@@ -36,7 +36,7 @@
                                 <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lnw-Yw-Iod">
-                                <rect key="frame" x="84.5" y="356" width="245" height="238"/>
+                                <rect key="frame" x="62" y="308.5" width="290" height="282"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="lnw-Yw-Iod" secondAttribute="height" multiplier="35:34" id="YJc-zj-7pd"/>
@@ -53,15 +53,14 @@
                             <constraint firstItem="yD8-M3-ayF" firstAttribute="leading" secondItem="eEe-gg-iTk" secondAttribute="leading" id="1xS-f4-wrg"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="eEe-gg-iTk" secondAttribute="trailing" id="49C-Na-m0b"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="TvX-CB-EWj" secondAttribute="trailing" id="6AH-rr-piI"/>
-                            <constraint firstItem="lnw-Yw-Iod" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="CTS-wf-2TP"/>
+                            <constraint firstItem="lnw-Yw-Iod" firstAttribute="centerX" secondItem="eEe-gg-iTk" secondAttribute="centerX" id="DnM-PY-d5y"/>
                             <constraint firstItem="QVb-z5-bmW" firstAttribute="top" secondItem="eEe-gg-iTk" secondAttribute="bottom" id="Lgg-7L-RPz"/>
                             <constraint firstItem="yD8-M3-ayF" firstAttribute="trailing" secondItem="eEe-gg-iTk" secondAttribute="trailing" id="Q6F-ky-wyk"/>
                             <constraint firstItem="yD8-M3-ayF" firstAttribute="bottom" secondItem="eEe-gg-iTk" secondAttribute="bottom" id="Qvn-hm-Wtd"/>
                             <constraint firstItem="yD8-M3-ayF" firstAttribute="top" secondItem="eEe-gg-iTk" secondAttribute="top" id="VfW-Hc-bA5"/>
                             <constraint firstItem="eEe-gg-iTk" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="WL1-nn-a3t"/>
-                            <constraint firstItem="lnw-Yw-Iod" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" multiplier="0.591787" id="WxL-ht-Top"/>
+                            <constraint firstItem="lnw-Yw-Iod" firstAttribute="width" secondItem="6Tk-OE-BBY" secondAttribute="width" multiplier="0.7" id="WxL-ht-Top"/>
                             <constraint firstItem="TvX-CB-EWj" firstAttribute="top" secondItem="QVb-z5-bmW" secondAttribute="bottom" id="ayd-jY-bT5"/>
-                            <constraint firstItem="lnw-Yw-Iod" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="bRk-8v-y4R"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QVb-z5-bmW" secondAttribute="trailing" id="iHS-dh-CTM"/>
                             <constraint firstItem="QVb-z5-bmW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="irb-Ek-zZb"/>
                             <constraint firstItem="TvX-CB-EWj" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="l8h-JL-NtG"/>
@@ -71,6 +70,7 @@
                             <constraint firstItem="Pir-OO-isj" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="qyJ-6J-EXv"/>
                             <constraint firstItem="QVb-z5-bmW" firstAttribute="top" secondItem="Pir-OO-isj" secondAttribute="bottom" id="sMD-iu-rlZ"/>
                             <constraint firstItem="Pir-OO-isj" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="tzU-r6-Lb4"/>
+                            <constraint firstItem="lnw-Yw-Iod" firstAttribute="centerY" secondItem="eEe-gg-iTk" secondAttribute="centerY" id="zuf-8t-yMh"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Plane Talk" id="eE5-AF-IFz"/>

@@ -14,7 +14,7 @@ protocol TextBoardViewDelegate: AnyObject {
 
 final class TextBoardView: UIView, NibLoadable {
 	enum Constant {
-		static let blueButtonColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1)
+		static let blueButtonColor = UIColor(r: 0, g: 122, b: 255)
 		static let disabledButtonColor = UIColor(white: 0.85, alpha: 1)
 		static let textViewBorderColor = UIColor(white: 0.88, alpha: 1)
 		static let textViewInset: CGFloat = 8

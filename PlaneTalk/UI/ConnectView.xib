@@ -11,7 +11,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ConnectView" customModule="PlaneTalk" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="257" height="183"/>
+            <rect key="frame" x="0.0" y="0.0" width="257" height="247"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Welcome to PlaneTalk" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LbD-R8-DIk">
@@ -21,26 +21,26 @@
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NVo-YW-7py">
-                    <rect key="frame" x="64.5" y="153" width="128.5" height="18"/>
+                    <rect key="frame" x="25.5" y="193" width="206" height="36"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="18" id="SxT-0i-Ude"/>
+                        <constraint firstAttribute="height" constant="36" id="SxT-0i-Ude"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                     <state key="normal" title="Become server"/>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="C0S-Q9-Vb0">
-                    <rect key="frame" x="64.5" y="123" width="128.5" height="18"/>
+                    <rect key="frame" x="25.5" y="145" width="206" height="36"/>
                     <constraints>
-                        <constraint firstAttribute="height" constant="18" id="ABl-Zo-9Bp"/>
+                        <constraint firstAttribute="height" constant="36" id="ABl-Zo-9Bp"/>
                     </constraints>
                     <fontDescription key="fontDescription" type="system" pointSize="11"/>
                     <state key="normal" title="Search Server"/>
                 </button>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zT4-Rl-rXR">
-                    <rect key="frame" x="118.5" y="36" width="20" height="81"/>
+                    <rect key="frame" x="118.5" y="36" width="20" height="103"/>
                     <subviews>
                         <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="GgV-Yg-heg">
-                            <rect key="frame" x="0.0" y="30.5" width="20" height="20"/>
+                            <rect key="frame" x="0.0" y="41.5" width="20" height="20"/>
                         </activityIndicatorView>
                     </subviews>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -53,11 +53,11 @@
             </subviews>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="NVo-YW-7py" secondAttribute="bottom" constant="12" id="K6U-HY-VwC"/>
+                <constraint firstAttribute="bottom" secondItem="NVo-YW-7py" secondAttribute="bottom" constant="18" id="K6U-HY-VwC"/>
                 <constraint firstItem="LbD-R8-DIk" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="12" id="RDk-CQ-vbB"/>
                 <constraint firstItem="NVo-YW-7py" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="VPR-ef-Ka7"/>
                 <constraint firstItem="zT4-Rl-rXR" firstAttribute="top" secondItem="LbD-R8-DIk" secondAttribute="bottom" constant="6" id="Vn5-SN-GeA"/>
-                <constraint firstItem="NVo-YW-7py" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.5" id="WVp-4L-bTI"/>
+                <constraint firstItem="NVo-YW-7py" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" multiplier="0.8" id="WVp-4L-bTI"/>
                 <constraint firstItem="LbD-R8-DIk" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="cMn-Ru-Ra4"/>
                 <constraint firstItem="C0S-Q9-Vb0" firstAttribute="centerX" secondItem="NVo-YW-7py" secondAttribute="centerX" id="sPy-Sn-krz"/>
                 <constraint firstItem="NVo-YW-7py" firstAttribute="top" secondItem="C0S-Q9-Vb0" secondAttribute="bottom" constant="12" id="u2E-MZ-jdc"/>
@@ -73,7 +73,7 @@
                 <outlet property="becomeServerButton" destination="NVo-YW-7py" id="PyB-M1-md5"/>
                 <outlet property="searchServerButton" destination="C0S-Q9-Vb0" id="hpe-SX-kPX"/>
             </connections>
-            <point key="canvasLocation" x="-55.797101449275367" y="-151.00446428571428"/>
+            <point key="canvasLocation" x="-55.797101449275367" y="-129.57589285714286"/>
         </view>
     </objects>
     <resources>

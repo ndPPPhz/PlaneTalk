@@ -11,6 +11,7 @@
 		6E1DB080262991EA00D49B7A /* BroadcastMessageFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E1DB07F262991EA00D49B7A /* BroadcastMessageFactory.swift */; };
 		6E3ECB86262B956400F9EE92 /* ConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3ECB85262B956400F9EE92 /* ConnectView.swift */; };
 		6E3ECB89262B956F00F9EE92 /* ConnectView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6E3ECB88262B956F00F9EE92 /* ConnectView.xib */; };
+		6E3ECB8C262BAC6900F9EE92 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E3ECB8B262BAC6900F9EE92 /* UIColor+Ext.swift */; };
 		6E6AC0A52624F52900A273B4 /* NetworkInterfaceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E6AC0A42624F52900A273B4 /* NetworkInterfaceType.swift */; };
 		6E8766FB2626595500FB80DA /* BroadcastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8766FA2626595500FB80DA /* BroadcastManager.swift */; };
 		6E8766FF26265BF600FB80DA /* ClientCommunicationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E8766FE26265BF600FB80DA /* ClientCommunicationManager.swift */; };
@@ -54,6 +55,7 @@
 		6E1DB07F262991EA00D49B7A /* BroadcastMessageFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastMessageFactory.swift; sourceTree = "<group>"; };
 		6E3ECB85262B956400F9EE92 /* ConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ConnectView.swift; path = PlaneTalk/UI/ConnectView.swift; sourceTree = SOURCE_ROOT; };
 		6E3ECB88262B956F00F9EE92 /* ConnectView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ConnectView.xib; sourceTree = "<group>"; };
+		6E3ECB8B262BAC6900F9EE92 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
 		6E6AC0A42624F52900A273B4 /* NetworkInterfaceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkInterfaceType.swift; sourceTree = "<group>"; };
 		6E8766FA2626595500FB80DA /* BroadcastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BroadcastManager.swift; sourceTree = "<group>"; };
 		6E8766FE26265BF600FB80DA /* ClientCommunicationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientCommunicationManager.swift; sourceTree = "<group>"; };
@@ -159,6 +161,7 @@
 				EF9C42E6241A899C00564AC2 /* Collection+Ext.swift */,
 				EF9C42E8241A89B200564AC2 /* UIView+Ext.swift */,
 				EF95F80B2402D5D20002C047 /* Notification+Ext.swift */,
+				6E3ECB8B262BAC6900F9EE92 /* UIColor+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -254,6 +257,7 @@
 				6E87670826265E1C00FB80DA /* Network */,
 				EF3D9D9B241D1603009079FC /* Delegate */,
 				EF50585F23FF0BEB001020FD /* Devices */,
+				EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -261,10 +265,9 @@
 		EF95F85A2403398F0002C047 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */,
 				6E3ECB85262B956400F9EE92 /* ConnectView.swift */,
 				6E3ECB88262B956F00F9EE92 /* ConnectView.xib */,
-				EF37DFEA24354F97009F1E29 /* UIChatTableView.swift */,
-				EF8CBE61241ABDCD009AB2D0 /* ChatMessage.swift */,
 				EF95F82E240309370002C047 /* MessageTableViewCell.swift */,
 				EF95F82F240309370002C047 /* MessageTableViewCell.xib */,
 				EF9C42E0241A858F00564AC2 /* TextBoardView.swift */,
@@ -354,6 +357,7 @@
 				6E6AC0A52624F52900A273B4 /* NetworkInterfaceType.swift in Sources */,
 				EF37DFEB24354F97009F1E29 /* UIChatTableView.swift in Sources */,
 				6E87670426265CF100FB80DA /* ServerCommunicationManager.swift in Sources */,
+				6E3ECB8C262BAC6900F9EE92 /* UIColor+Ext.swift in Sources */,
 				EF3D9DA3241D1682009079FC /* ClientCommunicationDelegate.swift in Sources */,
 				EF50585623FEDC84001020FD /* NetworkInterface.swift in Sources */,
 				EF8CBE5E241AB547009AB2D0 /* Reusable.swift in Sources */,

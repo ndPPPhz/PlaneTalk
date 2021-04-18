@@ -12,7 +12,8 @@ final class ChatViewController: UIViewController {
 	private enum Constant {
 		static let navigatioBarBackgroundColor = UIColor(white: 0.96, alpha: 1)
 		static let keyboardGap: CGFloat = 38
-		static let viewBackgroundColor = UIColor(red: 246/255, green: 245/255, blue: 246/255, alpha: 1)
+		static let viewBackgroundColor = UIColor(r: 246, g: 245, b: 246)
+		static let cornerRadiusRatio: CGFloat = 0.08
 	}
 
 	@IBOutlet private var tableView: UIChatTableView!
@@ -24,17 +25,14 @@ final class ChatViewController: UIViewController {
 		}
 	}
 
+	// Initial views for connecting
+	private lazy var connectView: ConnectView = ConnectView.instantiateFromNib()
 	@IBOutlet private var overlayView: UIView!
-	@IBOutlet weak var connectViewContainerView: UIView! {
+	@IBOutlet private var connectViewContainerView: UIView! {
 		didSet {
 			connectView.embed(into: connectViewContainerView)
 		}
 	}
-
-	private lazy var connectView: ConnectView = {
-		let connectView = UINib(nibName: "ConnectView", bundle: .main).instantiate(withOwner: nil, options: nil).first as! ConnectView
-		return connectView
-	}()
 
 	private var textBoardView = TextBoardView.instantiateFromNib()
 	private var viewModel: ChatViewModelInterface?
@@ -135,6 +133,11 @@ final class ChatViewController: UIViewController {
 		UIView.animate(withDuration: duration, animations: {
 			self.textBoardViewContainerBottomConstraint.constant = newBottomConstant
 			self.view.layoutIfNeeded()
+			let messagesCount = self.messages.count
+			guard messagesCount > 0 else {
+				return
+			}
+			self.tableView.scrollToRow(at: IndexPath(row: messagesCount - 1, section: 0), at: .bottom, animated: false)
 		})
 	}
 
@@ -149,13 +152,15 @@ final class ChatViewController: UIViewController {
 		tableView.delegate = self
 		tableView.dataSource = self
 
+		connectViewContainerView.layer.masksToBounds = true
+
 		view.backgroundColor = Constant.viewBackgroundColor
 		navigationController?.navigationBar.backgroundColor = Constant.navigatioBarBackgroundColor
 
 		let searchButtonViewData = ConnectView.ViewData.ButtonViewData(
 			title: "Search server",
 			color: .white,
-			backgroundColor: .init(red: 32/255, green: 99/255, blue: 155/255, alpha: 1),
+			backgroundColor: .init(r: 32, g: 99, b: 155),
 			tapHanlder: { [weak self] in
 				self?.connectView.showActivityIndicator(true)
 				self?.viewModel?.searchServer()
@@ -165,7 +170,7 @@ final class ChatViewController: UIViewController {
 		let serverButtonViewData = ConnectView.ViewData.ButtonViewData(
 			title: "Become server",
 			color: .white,
-			backgroundColor: .init(red: 32/255, green: 99/255, blue: 155/255, alpha: 1),
+			backgroundColor: .init(r: 32, g: 99, b: 155),
 			tapHanlder: { [weak self] in
 				self?.viewModel?.askServerPermissions()
 				self?.hideOverlay()
@@ -181,12 +186,22 @@ final class ChatViewController: UIViewController {
 	}
 
 	private func hideOverlay() {
-		overlayView.isHidden = true
-		connectViewContainerView.isHidden = true
+		UIView.animate(withDuration: 0.35, animations: {
+			self.overlayView.alpha = 0
+			self.connectViewContainerView.alpha = 0
+		}, completion: { _ in
+			self.overlayView.isHidden = true
+			self.connectViewContainerView.isHidden = true
+		})
 	}
 
 	@objc private func didTapOnTableview() {
 		view.endEditing(true)
+	}
+
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		connectViewContainerView.layer.cornerRadius = connectViewContainerView.frame.height * Constant.cornerRadiusRatio
 	}
 }
 
@@ -226,21 +241,20 @@ extension ChatViewController: MessagePresenter {
 extension ChatViewController: TextBoardViewDelegate {
 	func textBoard(_ textBoard: TextBoardView, didPressSendButtonWith text: String) {
 		viewModel?.send(text)
-		view.endEditing(true)
 	}
 }
 
 extension MessageTableViewCell.ViewData {
 	static func from(_ chatMessage: ChatMessage) -> MessageTableViewCell.ViewData {
-		let textColor = chatMessage.isMyMessage ? MessageTableViewCell.Constant.outgoingMessageTextColor : MessageTableViewCell.Constant.incomingMessageTextColor
-		let backgroundColor = chatMessage.isMyMessage ? MessageTableViewCell.Constant.outgoingMessageBubbleColor : MessageTableViewCell.Constant.incomingMessageBubbleColor
+		let textColor: UIColor = chatMessage.isSentByMe ? .outgoingMessageTextColor : .incomingMessageTextColor
+		let backgroundColor: UIColor = chatMessage.isSentByMe ? .outgoingMessageBubbleColor : .incomingMessageBubbleColor
 
 		return MessageTableViewCell.ViewData(
 			sender: chatMessage.senderAlias,
 			text: chatMessage.text,
 			textColor: textColor,
 			backgroundColor: backgroundColor,
-			alignment: chatMessage.isMyMessage ? .right : .left
+			alignment: chatMessage.isSentByMe ? .right : .left
 		)
 	}
 }
