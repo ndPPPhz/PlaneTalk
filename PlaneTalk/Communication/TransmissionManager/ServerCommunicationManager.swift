@@ -241,6 +241,8 @@ final class ServerCommunicationManager: ServerCommunicationInterface {
 	func sendServerMessage(_ text: String) {
 		let composedText = serverMessageFactory.generateServerMessage(from: text)
 
+		var didSendMessage = false
+
 		for event in kEvents {
 			let fd = event.ident
 
@@ -250,10 +252,14 @@ final class ServerCommunicationManager: ServerCommunicationInterface {
 				if bytes < 0 {
 					print("Error sending TCP Message")
 				} else {
-					print("Sent by server: \(composedText)")
-					serverTCPCommunicationDelegate?.serverDidSendItsText(composedText)
+					didSendMessage = true
 				}
 			}
+		}
+
+		if didSendMessage {
+			print("Sent by server: \(composedText)")
+			serverTCPCommunicationDelegate?.serverDidSendItsText(composedText)
 		}
 	}
 
